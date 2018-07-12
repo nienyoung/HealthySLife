@@ -3,4 +3,5 @@
     <string name="title_activity_healthy">HealthyActivity</string>
     <string name="title_exercise">运动</string>
     <string name="title_healthy">健康</string>
+    <string name="hello_map_fragment">Hello map fragment</string>
 </resources>
