@@ -39,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
     private MainViewPagerAdapter mPagerAdapter;
     private BottomNavigationView mBottomNavigationView;
 
-    private int mMaxDelay = 5000;
+    /**
+     * batch time (in microsecond)
+     */
+    private int mMaxDelay = 2000000;
     private int mSteps;
 
     private long mStartTime = 0;
@@ -191,19 +194,28 @@ public class MainActivity extends AppCompatActivity {
         public void onStart() {
             mStartTime = System.currentTimeMillis();
             mTimerHandler.postDelayed(mTimerRunnable, 0);
-//            registerEventListener();
+            registerEventListener();
         }
 
         @Override
         public void onStop() {
-//            unregisterListeners();
+            unregisterListeners();
             mTimerHandler.removeCallbacks(mTimerRunnable);
+            mStartTime = 0;
+            mSteps = 0;
             MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(mPagerAdapter.getFragmentTag(MAP_FRAGMENT_POSITION));
             if (mapFragment == null) {
                 Log.e(TAG, "Get map fragment fail");
                 return;
             }
             mapFragment.updateTimeText(0);
+            HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
+                    .findFragmentByTag(mPagerAdapter.getFragmentTag(HEALTHY_FRAGMENT_POSITION));
+            if (healthyFragment == null) {
+                Log.e(TAG, "Get healthy fragment fail");
+                return;
+            }
+            healthyFragment.updateStepCounterText(0);
         }
     };
 
