@@ -10,5 +10,7 @@
     <string name="main_healthy_calorieLabel1">您本次运动共消耗了</string>
     <string name="main_healthy_calorieLabel2">卡路里！</string>
     <string name="main_healthy_share_label">分享</string>
-    <string name="main_map_startRun">开始</string>
+    <string name="main_map_startExercise">开始</string>
+    <string name="main_map_stopExercise">结束</string>
+    <string name="main_map_timeFormat">%02d:%02d:%02d</string>
 </resources>

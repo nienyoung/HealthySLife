@@ -22,9 +22,18 @@
         android:layout_marginBottom="@dimen/fab_marginBottom"
         android:layout_marginEnd="@dimen/fab_marginEnd"
         android:background="@drawable/bg_circle_button"
-        android:text="@string/main_map_startRun"
+        android:text="@string/main_map_startExercise"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_map_exerciseTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_map_startRun"
+        app:layout_constraintEnd_toEndOf="@+id/btn_map_startRun"
+        app:layout_constraintStart_toStartOf="@+id/btn_map_startRun" />
 
 </android.support.constraint.ConstraintLayout>
