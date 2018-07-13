@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     private long mStartTime = 0;
 
-    Handler mTimerHandler = new Handler();
-    Runnable mTimerRunnable = new Runnable() {
+    private Handler mTimerHandler = new Handler();
+    private Runnable mTimerRunnable = new Runnable() {
 
         @Override
         public void run() {
@@ -244,8 +244,4 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
-
-    public interface OnStepsChangeListener {
-        void onStepsChange(int steps);
-    }
 }
