@@ -258,6 +258,11 @@ public class MusicActivity extends AppCompatActivity {
         }
     };
 
+    public void onBackPressed() {
+        super.onBackPressed();
+
+    }
+
     @Override
     public void onPause(){
         super.onPause();

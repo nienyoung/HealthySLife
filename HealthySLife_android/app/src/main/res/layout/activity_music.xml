@@ -9,7 +9,6 @@
 
     <ListView
         android:id="@+id/main_listview"
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -91,7 +90,7 @@
             android:id="@+id/previousButton"
             android:layout_width="50dp"
             android:layout_height="30dp"
-            android:background="@drawable/rectangle"
+            android:background="@drawable/round_rectangle"
             android:textSize="15dp"
             android:text="PREV"
             android:textColor="#ffffff" />
@@ -100,7 +99,7 @@
             android:id="@+id/isPlayButton"
             android:layout_width="50dp"
             android:layout_height="30dp"
-            android:background="@drawable/rectangle"
+            android:background="@drawable/round_rectangle"
             android:textSize="15dp"
             android:text="PLAY"
             android:textColor="#ffffff"
@@ -111,7 +110,7 @@
             android:id="@+id/nextButton"
             android:layout_width="50dp"
             android:layout_height="30dp"
-            android:background="@drawable/rectangle"
+            android:background="@drawable/round_rectangle"
             android:textSize="15dp"
             android:text="NEXT"
             android:textColor="#ffffff"/>

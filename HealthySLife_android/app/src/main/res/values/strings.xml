@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Healthy S Life</string>
+
+    <string name="title_activity_healthy">HealthyActivity</string>
+    <string name="title_exercise">运动</string>
+    <string name="title_healthy">健康</string>
+    <string name="hello_map_fragment">Hello map fragment</string>
+    <string name="main_healthy_stepCounterLabel">步数：</string>
+    <string name="main_healthy_stepFrequencyLabel">平均步频：</string>
+    <string name="main_healthy_speedLabel">平均速度：</string>
+    <string name="main_healthy_calorieLabel1">您本次运动共消耗了</string>
+    <string name="main_healthy_calorieLabel2">卡路里！</string>
+    <string name="main_healthy_share_label">分享</string>
+    <string name="main_map_startExercise">开始</string>
+    <string name="main_map_stopExercise">结束</string>
+    <string name="main_map_timeFormat">%02d:%02d:%02d</string>
 </resources>
