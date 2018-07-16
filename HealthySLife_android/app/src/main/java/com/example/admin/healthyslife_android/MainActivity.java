@@ -72,6 +72,15 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             mapFragment.updateTimeText(millis);
+            if (millis != 0) {
+                HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
+                        .findFragmentByTag(mPagerAdapter.getFragmentTag(HEALTHY_FRAGMENT_POSITION));
+                if (healthyFragment == null) {
+                    Log.e(TAG, "Get healthy fragment fail");
+                } else {
+                    healthyFragment.updateStepFrequencyText(((double) (mSteps * 60000)) / millis);
+                }
+            }
 
             mTimerHandler.postDelayed(this, 500);
         }
@@ -243,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             healthyFragment.updateStepCounterText(0);
+            healthyFragment.updateStepFrequencyText(0);
             mState = STATE_STOP;
         }
     };
