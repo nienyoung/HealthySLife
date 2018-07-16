@@ -21,10 +21,10 @@ import android.widget.Button;
 import android.content.Intent;
 import android.view.View;
 
+import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
 import com.example.admin.healthyslife_android.fragment.MapFragment;
 import com.example.admin.healthyslife_android.music.MusicActivity;
-import com.example.admin.healthyslife_android.viewpager.MainViewPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +63,30 @@ public class MainActivity extends AppCompatActivity {
      * Steps counter
      */
     private int mSteps;
+    /**
+     * Start exercise time
+     */
     private long mStartTime = 0;
-
-    private Button musicButton;
+    /**
+     * Runner's velocity in X-axis
+     */
+    private double mVelX = 0;
+    /**
+     * Runner's velocity in Y-axis
+     */
+    private double mVelY = 0;
+    /**
+     * Runner's velocity in Z-axis
+     */
+    private double mVelZ = 0;
+    /**
+     * Timestamp the latest event happened in microseconds
+     */
+    private long mLastTime = 0;
+    /**
+     * Total distance the user run
+     */
+    private double mToTalDis = 0;
 
     private Handler mTimerHandler = new Handler();
     private Runnable mTimerRunnable = new Runnable() {
@@ -87,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
                 if (healthyFragment == null) {
                     Log.e(TAG, "Get healthy fragment fail");
                 } else {
-                    healthyFragment.updateStepFrequencyText(((double) (mSteps * 60000)) / millis);
+                    healthyFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
+                    healthyFragment.updateSpeedText(mToTalDis * 1000 / millis);
                 }
             }
 
@@ -114,14 +136,6 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(mOnPageChangeListener);
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         mBottomNavigationView.setSelectedItemId(R.id.navigation_exercise);
-
-        musicButton = (Button) findViewById(R.id.musicButton);
-        musicButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,MusicActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -175,20 +189,24 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Get sensor manager fail while registering listener");
             return;
         }
-        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        Sensor stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
         // Register the listener for this sensor in batch mode.
         // If the max delay is 0, events will be delivered in continuous mode without batching.
-        final boolean batchMode = sensorManager.registerListener(
-                mListener, sensor, SensorManager.SENSOR_DELAY_NORMAL, mMaxDelay);
+        final boolean stepBatchMode = sensorManager.registerListener(
+                mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, mMaxDelay);
 
-        if (!batchMode) {
+        if (!stepBatchMode) {
             // Batch mode could not be enabled, show a warning message and switch to continuous mode
             Log.w(TAG, "Could not register sensor listener in batch mode, " +
                     "falling back to continuous mode.");
             sensorManager.registerListener(
-                    mListener, sensor, SensorManager.SENSOR_DELAY_NORMAL, 0);
+                    mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0);
         }
+
+        Sensor accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        sensorManager.registerListener(
+                mAccelerateListener, accelerationSensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
     /**
@@ -200,7 +218,8 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Get sensor manager fail while unregister");
             return;
         }
-        sensorManager.unregisterListener(mListener);
+        sensorManager.unregisterListener(mStepsListener);
+        sensorManager.unregisterListener(mAccelerateListener);
         Log.i(TAG, "Sensor listener unregistered.");
     }
 
@@ -270,8 +289,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "Get healthy fragment fail");
                 return;
             }
-            healthyFragment.updateStepCounterText(0);
-            healthyFragment.updateStepFrequencyText(0);
             mState = STATE_STOP;
         }
     };
@@ -279,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Listener that handles step sensor events for step detector and step counter sensors.
      */
-    private final SensorEventListener mListener = new SensorEventListener() {
+    private final SensorEventListener mStepsListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
             if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
@@ -297,12 +314,48 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-        }
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     };
 
-    // Storage Permissions
+    /**
+     * Listener that handles accelerometer events for accelerometer.
+     */
+    private final SensorEventListener mAccelerateListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+                final long t = event.timestamp / 1000;
+                if (mLastTime != 0) {
+                    final float dT = (float) (t - mLastTime) / 1000000.f;
+
+                    final float aX = event.values[0];
+                    final float aY = event.values[1];
+                    final float aZ = event.values[2];
+
+                    // s = vt + 1/2 * a * t^2
+                    double mDisX = mVelX * dT + aX * dT * dT / 2;
+                    double mDisY = mVelY * dT + aY * dT * dT / 2;
+                    double mDisZ = mVelZ * dT + aZ * dT * dT / 2;
+
+                    // v1 = v0 + a * t
+                    mVelX += aX * dT;
+                    mVelY += aY * dT;
+                    mVelZ += aZ * dT;
+
+                    // s = (sx^2 + sy^2 + sz^2)^0.5
+                    mToTalDis += Math.sqrt(mDisX * mDisX + mDisY * mDisY + mDisZ * mDisZ);
+                }
+                mLastTime = t;
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+    };
+
+    /**
+     * Storage Permissions
+     */
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -314,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * If the app does not has permission then the user will be prompted to grant permissions
      *
-     * @param activity
+     * @param activity activity
      */
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -330,6 +383,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     protected void onResume() {
         verifyStoragePermissions(this);
         super.onResume();

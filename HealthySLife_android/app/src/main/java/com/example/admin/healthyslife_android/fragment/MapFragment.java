@@ -1,5 +1,6 @@
 package com.example.admin.healthyslife_android.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 
 import com.example.admin.healthyslife_android.R;
+import com.example.admin.healthyslife_android.music.MusicActivity;
 
 
 /**
@@ -20,8 +22,6 @@ import com.example.admin.healthyslife_android.R;
 public class MapFragment extends Fragment {
 
     private TextView mTimeTextView;
-
-    private Button musicButton;
 
     private OnExerciseStateChangeListener onExerciseStateChangeListener;
 
@@ -58,6 +58,13 @@ public class MapFragment extends Fragment {
                     button.setText(R.string.main_map_startExercise);
                     onExerciseStateChangeListener.onStop();
                 }
+            }
+        });
+        view.findViewById(R.id.btn_map_music).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), MusicActivity.class);
+                startActivity(intent);
             }
         });
         mTimeTextView = view.findViewById(R.id.tv_map_exerciseTime);

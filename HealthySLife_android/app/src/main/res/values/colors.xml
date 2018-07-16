@@ -7,4 +7,5 @@
     <color name="color_icon_green">#33cc00</color>
     <color name="color_icon_green_pressed">#2fa408</color>
     <color name="color_font_green">#339900</color>
+    <color name="color_font_white">#ffffff</color>
 </resources>
