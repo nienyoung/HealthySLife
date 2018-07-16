@@ -32,19 +32,30 @@ public class MainActivity extends AppCompatActivity {
     private static final int MAP_FRAGMENT_POSITION = 0;
     private static final int HEALTHY_FRAGMENT_POSITION = 1;
 
+    /**
+     * State of application, used to register for sensors when app is restored
+     */
+    public static final int STATE_STOP = 0;
+    public static final int STATE_START = 1;
+
+    private static final String BUNDLE_STATE = "state";
     private static final String BUNDLE_LATENCY = "latency";
     private static final String BUNDLE_STEPS = "steps";
+    private static final String BUNDLE_TIME = "time";
 
     private ViewPager mViewPager;
     private MainViewPagerAdapter mPagerAdapter;
     private BottomNavigationView mBottomNavigationView;
 
+    private int mState;
     /**
-     * batch time (in microsecond)
+     * Max batch latency is specified in microseconds
      */
     private int mMaxDelay = 2000000;
+    /**
+     * Steps counter
+     */
     private int mSteps;
-
     private long mStartTime = 0;
 
     private Handler mTimerHandler = new Handler();
@@ -54,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             long millis = System.currentTimeMillis() - mStartTime;
 
-            // update text view
+            // update time text view
             MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(mPagerAdapter.getFragmentTag(MAP_FRAGMENT_POSITION));
             if (mapFragment == null) {
                 Log.e(TAG, "Get map fragment fail");
@@ -87,6 +98,13 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigationView.setSelectedItemId(R.id.navigation_exercise);
     }
 
+    @Override
+    protected void onDestroy() {
+        unregisterListeners();
+        mTimerHandler.removeCallbacks(mTimerRunnable);
+        super.onDestroy();
+    }
+
     /**
      * Records the state of the application into the {@link android.os.Bundle}.
      *
@@ -96,8 +114,10 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Store all variables required to restore the state of the application
+        outState.putInt(BUNDLE_STATE, mState);
         outState.putInt(BUNDLE_LATENCY, mMaxDelay);
         outState.putInt(BUNDLE_STEPS, mSteps);
+        outState.putLong(BUNDLE_TIME, mStartTime);
     }
 
     @Override
@@ -107,6 +127,12 @@ public class MainActivity extends AppCompatActivity {
             resetCounter();
             mSteps = savedInstanceState.getInt(BUNDLE_STEPS);
             mMaxDelay = savedInstanceState.getInt(BUNDLE_LATENCY);
+            mState = savedInstanceState.getInt(BUNDLE_STATE);
+            mStartTime = savedInstanceState.getLong(BUNDLE_TIME);
+
+            if (mState == STATE_START) {
+                registerEventListener();
+            }
         }
     }
 
@@ -192,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
     private MapFragment.OnExerciseStateChangeListener onExerciseStateChangeListener = new MapFragment.OnExerciseStateChangeListener() {
         @Override
         public void onStart() {
+            mState = STATE_START;
             mStartTime = System.currentTimeMillis();
             mTimerHandler.postDelayed(mTimerRunnable, 0);
             registerEventListener();
@@ -216,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             healthyFragment.updateStepCounterText(0);
+            mState = STATE_STOP;
         }
     };
 
