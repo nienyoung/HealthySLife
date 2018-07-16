@@ -1,4 +1,4 @@
-package com.example.admin.healthyslife_android.viewpager;
+package com.example.admin.healthyslife_android.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;

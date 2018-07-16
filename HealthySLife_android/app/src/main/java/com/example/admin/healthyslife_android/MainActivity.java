@@ -17,7 +17,7 @@ import android.view.MenuItem;
 
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
 import com.example.admin.healthyslife_android.fragment.MapFragment;
-import com.example.admin.healthyslife_android.viewpager.MainViewPagerAdapter;
+import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
