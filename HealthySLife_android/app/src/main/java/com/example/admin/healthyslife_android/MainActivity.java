@@ -109,8 +109,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterListeners();
-        mTimerHandler.removeCallbacks(mTimerRunnable);
+        if (mState == STATE_START) {
+            unregisterListeners();
+            mTimerHandler.removeCallbacks(mTimerRunnable);
+        }
         super.onDestroy();
     }
 
