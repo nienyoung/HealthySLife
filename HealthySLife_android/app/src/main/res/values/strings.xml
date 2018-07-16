@@ -14,4 +14,5 @@
     <string name="main_map_stopExercise">结束</string>
     <string name="main_map_timeFormat">%02d:%02d:%02d</string>
     <string name="main_healthy_stepFrequencyFormat">%.2f steps/min</string>
+    <string name="main_healthy_avgSpeedFormat">%.2f m/s</string>
 </resources>

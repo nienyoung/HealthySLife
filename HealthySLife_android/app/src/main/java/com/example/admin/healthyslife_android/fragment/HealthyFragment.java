@@ -18,6 +18,7 @@ public class HealthyFragment extends Fragment {
 
     private TextView mStepsTextView;
     private TextView mStepFrequencyTextView;
+    private TextView mSpeedTextView;
 
     public HealthyFragment() {}
 
@@ -45,6 +46,7 @@ public class HealthyFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mStepsTextView = view.findViewById(R.id.tv_healthy_stepCounter);
         mStepFrequencyTextView = view.findViewById(R.id.tv_healthy_stepFrequency);
+        mSpeedTextView = view.findViewById(R.id.tv_healthy_speed);
     }
 
     public void updateStepCounterText(int steps) {
@@ -53,5 +55,9 @@ public class HealthyFragment extends Fragment {
 
     public void updateStepFrequencyText(double frequency) {
         mStepFrequencyTextView.setText(getString(R.string.main_healthy_stepFrequencyFormat, frequency));
+    }
+
+    public void updateSpeedText(double speed) {
+        mSpeedTextView.setText(getString(R.string.main_healthy_avgSpeedFormat, speed));
     }
 }
