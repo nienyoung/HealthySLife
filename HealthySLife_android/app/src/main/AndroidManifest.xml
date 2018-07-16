@@ -22,7 +22,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".music.MusicActivity"></activity>
+        <activity android:name=".music.MusicActivity"
+            android:launchMode="singleInstance"></activity>
         <service android:name=".music.MusicService" android:exported="true"></service>
     </application>
 

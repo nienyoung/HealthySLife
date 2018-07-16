@@ -8,7 +8,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 /**
- * Created by kx on 2016/11/3.
+ * author:YangJie
  */
 public class MusicService extends Service {
 
@@ -21,7 +21,6 @@ public class MusicService extends Service {
 
     public static int isReturnTo = 0;
     public static MediaPlayer mediaPlayer = new MediaPlayer();
-    public static ObjectAnimator animator;
     public MusicService() {
 
     }
@@ -57,7 +56,6 @@ public class MusicService extends Service {
             mediaPlayer.pause();
         } else {
             mediaPlayer.start();
-
         }
     }
 
@@ -73,7 +71,7 @@ public class MusicService extends Service {
         super.onDestroy();
     }
     /**
-     * onBind 是 Service 的虚方法，因此我们不得不实现它。
+     * onBind 是 Service 的虚方法
      * 返回 null，表示客服端不能建立到此服务的连接。
      */
     @Override

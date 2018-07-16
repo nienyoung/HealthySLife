@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.AdapterView;
 
+import com.example.admin.healthyslife_android.MainActivity;
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.adapter.MyAdapter;
 import com.example.admin.healthyslife_android.bean.Song;
@@ -71,7 +72,9 @@ public class MusicActivity extends AppCompatActivity {
         //默认播放第一首
         musicService.resetPlayer();
        String firstPath = list.get(0).path;
+        seekBar.setProgress(0);
         musicService.initPlayer(firstPath);
+        seekBar.setMax(musicService.mediaPlayer.getDuration());
         playingSong.setText(list.get(0).song);
         playingSinger.setText(list.get(0).singer);
 
@@ -83,7 +86,6 @@ public class MusicActivity extends AppCompatActivity {
                 if (currentSongIndex >= list.size()) {
                     currentSongIndex = 0;
                 }
-                seekBar.setProgress(0);
                 play();
             }
         });
@@ -96,8 +98,6 @@ public class MusicActivity extends AppCompatActivity {
         next = (Button) findViewById(R.id.nextButton);
 
         seekBar = (SeekBar) findViewById(R.id.seekBar);
-        seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
-        seekBar.setMax(musicService.mediaPlayer.getDuration());
 
         totalTime = (TextView) findViewById(R.id.totalTime);
         playingTime = (TextView) findViewById(R.id.playingTime);
@@ -128,8 +128,6 @@ public class MusicActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             //获取点击的列表的中音乐的位置，赋值给当前播放音乐
             currentSongIndex = position;
-            //令暂停的进度为0（即为从头播放）
-            seekBar.setProgress(0);
             //播放
             play();
         }
@@ -141,7 +139,6 @@ public class MusicActivity extends AppCompatActivity {
             switch (view.getId()) {
                 case R.id.isPlayButton:
                     musicService.playOrPause();
-                    //setPlayButton();
                     break;
                 case R.id.previousButton:
                     previous();
@@ -162,7 +159,6 @@ public class MusicActivity extends AppCompatActivity {
             if (currentSongIndex < 0) {
                 currentSongIndex = list.size() - 1;
             }
-                seekBar.setProgress(0);
                 play();
     }
 
@@ -173,7 +169,6 @@ public class MusicActivity extends AppCompatActivity {
         if (currentSongIndex >= list.size()) {
             currentSongIndex = 0;
         }
-            seekBar.setProgress(0);
             play();
     }
 
@@ -181,7 +176,6 @@ public class MusicActivity extends AppCompatActivity {
     private void setPlayButton(){
         if(musicService.mediaPlayer.isPlaying()){
             isPlay.setText("Pause");
-            //animator.pause();
         } else {
             isPlay.setText("Play");
 
@@ -195,10 +189,13 @@ public class MusicActivity extends AppCompatActivity {
         try {
             //设置音乐文件来源
             Song cur = list.get(currentSongIndex);
+            //设置seekbar长度
+            seekBar.setProgress(0);
             musicService.playNewSong(cur.path);
+            seekBar.setMax(musicService.mediaPlayer.getDuration());
+
             playingSong.setText(cur.song);
             playingSinger.setText(cur.singer);
-            //setPlayButton();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -259,8 +256,8 @@ public class MusicActivity extends AppCompatActivity {
     };
 
     public void onBackPressed() {
-        super.onBackPressed();
-
+        Intent intent = new Intent(MusicActivity.this,MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
