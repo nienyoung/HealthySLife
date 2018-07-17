@@ -15,7 +15,7 @@
             android:id="@+id/lrcLayout"
             android:clickable="true"
             android:focusable="true"
-            android:layout_width="wrap_content"
+            android:layout_width="230dp"
             android:layout_height="50dp"
             android:layout_weight="2"
             android:orientation="horizontal"  >
@@ -60,35 +60,30 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
             android:orientation="horizontal">
-            <Button
+            <ImageView
                 android:id="@+id/previousButton"
                 android:layout_width="40dp"
-                android:layout_height="25dp"
-                android:background="@drawable/round_rectangle"
-                android:textSize="13dp"
-                android:text="PREV"
+                android:layout_height="40dp"
+                android:src="@drawable/previous"
                 android:textColor="#ffffff" />
 
-            <Button
+            <ImageView
                 android:id="@+id/isPlayButton"
-                android:layout_width="45dp"
-                android:layout_height="25dp"
-                android:background="@drawable/round_rectangle"
-                android:textSize="13dp"
-                android:text="PLAY"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/pause"
                 android:textColor="#ffffff"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp" />
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp" />
 
-            <Button
+            <ImageView
                 android:id="@+id/nextButton"
-                android:layout_width="45dp"
-                android:layout_height="25dp"
-                android:background="@drawable/round_rectangle"
-                android:textSize="13dp"
-                android:text="NEXT"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/next"
                 android:textColor="#ffffff"/>
         </LinearLayout>
     </LinearLayout>

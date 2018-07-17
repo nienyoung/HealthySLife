@@ -39,9 +39,9 @@ import java.util.List;
 
 public class MusicActivity extends AppCompatActivity {
 
-    private Button isPlay;
-    private Button previous;
-    private Button next;
+    private ImageView isPlay;
+    private ImageView previous;
+    private ImageView next;
     private ImageView albumImage;
 
     // private ObjectAnimator animator;
@@ -98,9 +98,9 @@ public class MusicActivity extends AppCompatActivity {
     }
 
     private void initView(){
-        isPlay = (Button) findViewById(R.id.isPlayButton);
-        previous = (Button) findViewById(R.id.previousButton);
-        next = (Button) findViewById(R.id.nextButton);
+        isPlay = (ImageView) findViewById(R.id.isPlayButton);
+        previous = (ImageView) findViewById(R.id.previousButton);
+        next = (ImageView) findViewById(R.id.nextButton);
         albumImage = (ImageView) findViewById(R.id.albumImage);
 
         seekBar = (SeekBar) findViewById(R.id.seekBar);
@@ -181,9 +181,9 @@ public class MusicActivity extends AppCompatActivity {
 
     private void setPlayButton(){
         if(musicService.mediaPlayer.isPlaying()){
-            isPlay.setText("Pause");
+            isPlay.setImageDrawable(getResources().getDrawable(R.drawable.play));
         } else {
-            isPlay.setText("Play");
+            isPlay.setImageDrawable(getResources().getDrawable(R.drawable.pause));
 
         }
     }
