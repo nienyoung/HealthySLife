@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.music.MusicActivity;
@@ -28,6 +29,10 @@ public class MapFragment extends Fragment {
     private int mState;
     private Button mStartButton;
     private Button mStopButton;
+
+    private TextView mStepsTextView;
+    private TextView mStepFrequencyTextView;
+    private TextView mSpeedTextView;
 
     private OnExerciseStateChangeListener onExerciseStateChangeListener;
 
@@ -91,10 +96,25 @@ public class MapFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        mStepsTextView = view.findViewById(R.id.tv_map_stepCounter);
+        mStepFrequencyTextView = view.findViewById(R.id.tv_map_stepFrequency);
+        mSpeedTextView = view.findViewById(R.id.tv_map_speed);
     }
 
     public void updateTimeText(long time) {
         mStartButton.setText(getTimeText(time));
+    }
+
+    public void updateStepCounterText(int steps) {
+        mStepsTextView.setText(String.valueOf(steps));
+    }
+
+    public void updateStepFrequencyText(double frequency) {
+        mStepFrequencyTextView.setText(getString(R.string.main_healthy_stepFrequencyFormat, frequency));
+    }
+
+    public void updateSpeedText(double speed) {
+        mSpeedTextView.setText(getString(R.string.main_healthy_avgSpeedFormat, speed));
     }
 
     private String getTimeText(long time) {

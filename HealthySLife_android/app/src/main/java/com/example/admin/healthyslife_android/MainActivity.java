@@ -62,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private int mSteps;
     /**
+     * Total steps are calculated from this value
+     */
+    private int mCounterSteps = 0;
+    /**
      * Start exercise time
      */
     private long mStartTime = 0;
@@ -101,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
             }
             mapFragment.updateTimeText(millis);
             if (millis != 0) {
+                mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
+                mapFragment.updateSpeedText(mToTalDis * 1000 / millis);
                 HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
                         .findFragmentByTag(mPagerAdapter.getFragmentTag(HEALTHY_FRAGMENT_POSITION));
                 if (healthyFragment == null) {
@@ -185,16 +191,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void resetCounter() {
         mSteps = 0;
+        mCounterSteps = 0;
     }
 
     private void registerEventListener() {
+        mCounterSteps = 0;
         // Get the default sensor for the sensor type from the SenorManager
         SensorManager sensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
         if (sensorManager == null) {
             Log.e(TAG, "Get sensor manager fail while registering listener");
             return;
         }
-        Sensor stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        Sensor stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         if (stepSensor == null) {
             Toast.makeText(getApplicationContext(), R.string.main_map_getStepSensorFail, Toast.LENGTH_SHORT).show();
         } else {
@@ -278,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onStart() {
             mState = STATE_START;
+            mSteps = 0;
             mStartTime = System.currentTimeMillis();
             mTimerHandler.postDelayed(mTimerRunnable, 0);
             registerEventListener();
@@ -299,8 +308,14 @@ public class MainActivity extends AppCompatActivity {
     private final SensorEventListener mStepsListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-                mSteps += event.values.length;
+            if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+                if (mCounterSteps < 1) {
+                    // initial value
+                    mCounterSteps = (int) event.values[0];
+                }
+
+                // Calculate steps taken based on first counter value received.
+                mSteps = (int) event.values[0] - mCounterSteps;
 
                 // Update the text view with the latest step count
                 HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
@@ -310,6 +325,14 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 healthyFragment.updateStepCounterText(mSteps);
+
+                MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
+                        .findFragmentByTag(mPagerAdapter.getFragmentTag(MAP_FRAGMENT_POSITION));
+                if (mapFragment == null) {
+                    Log.e(TAG, "Get map fragment fail");
+                    return;
+                }
+                mapFragment.updateStepCounterText(mSteps);
             }
         }
 
