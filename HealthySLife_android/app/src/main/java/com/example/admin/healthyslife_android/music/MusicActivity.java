@@ -62,7 +62,6 @@ public class MusicActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getOverflowMenu();
         setContentView(R.layout.activity_music);
 
         bindServiceConnection();
@@ -311,27 +310,6 @@ public class MusicActivity extends AppCompatActivity {
     public void onDestroy() {
         unbindService(sc);
         super.onDestroy();
-    }
-
-    //这里是在登录界面label上右上角添加三个点，里面可添加其他功能
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.settings, menu);
-        return true;
-    }
-
-    private void getOverflowMenu() {
-        try {
-            ViewConfiguration config = ViewConfiguration.get(this);
-            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
-            if (menuKeyField != null) {
-                menuKeyField.setAccessible(true);
-                menuKeyField.setBoolean(config, false);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
