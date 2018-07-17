@@ -271,6 +271,7 @@ public class MusicActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent(MusicActivity.this,MainActivity.class);
         startActivity(intent);
+        super.onStop();
         overridePendingTransition(R.anim.leftin, R.anim.leftout);
     }
 

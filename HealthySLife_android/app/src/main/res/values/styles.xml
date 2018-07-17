@@ -12,11 +12,11 @@
 
     <style name="bottomNavigationStyle" parent="Widget.Design.BottomNavigationView">
         <!--ripple的颜色-->
-        <item name="colorControlHighlight">@color/colorPrimary</item>
+        <item name="colorControlHighlight">@color/color_navigation_highlight</item>
         <!--选中时的颜色-->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/color_navigation_selected</item>
         <!--未选中的颜色-->
-        <item name="android:textColorSecondary" >@color/font_gray</item>
+        <item name="android:textColorSecondary" >@color/color_navigation_unselected</item>
     </style>
 
 </resources>
