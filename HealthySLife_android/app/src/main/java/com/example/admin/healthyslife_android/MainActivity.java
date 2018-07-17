@@ -17,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
@@ -136,6 +137,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        verifyStoragePermissions(this);
+        super.onResume();
+        Log.d("hint", "handler post runnable");
+    }
+
+    @Override
     protected void onDestroy() {
         if (mState == STATE_START) {
             unregisterListeners();
@@ -187,23 +195,30 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         Sensor stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        if (stepSensor == null) {
+            Toast.makeText(getApplicationContext(), R.string.main_map_getStepSensorFail, Toast.LENGTH_SHORT).show();
+        } else {
+            // Register the listener for this sensor in batch mode.
+            // If the max delay is 0, events will be delivered in continuous mode without batching.
+            final boolean stepBatchMode = sensorManager.registerListener(
+                    mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, mMaxDelay);
 
-        // Register the listener for this sensor in batch mode.
-        // If the max delay is 0, events will be delivered in continuous mode without batching.
-        final boolean stepBatchMode = sensorManager.registerListener(
-                mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, mMaxDelay);
-
-        if (!stepBatchMode) {
-            // Batch mode could not be enabled, show a warning message and switch to continuous mode
-            Log.w(TAG, "Could not register sensor listener in batch mode, " +
-                    "falling back to continuous mode.");
-            sensorManager.registerListener(
-                    mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0);
+            if (!stepBatchMode) {
+                // Batch mode could not be enabled, show a warning message and switch to continuous mode
+                Log.w(TAG, "Could not register sensor listener in batch mode, " +
+                        "falling back to continuous mode.");
+                sensorManager.registerListener(
+                        mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0);
+            }
         }
 
         Sensor accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        sensorManager.registerListener(
-                mAccelerateListener, accelerationSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (accelerationSensor == null) {
+            Toast.makeText(getApplicationContext(), R.string.main_map_getAccelerationSensorFail, Toast.LENGTH_SHORT).show();
+        } else {
+            sensorManager.registerListener(
+                    mAccelerateListener, accelerationSensor, SensorManager.SENSOR_DELAY_GAME);
+        }
     }
 
     /**
@@ -366,12 +381,5 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
-    }
-
-    @Override
-    protected void onResume() {
-        verifyStoragePermissions(this);
-        super.onResume();
-        Log.d("hint", "handler post runnable");
     }
 }
