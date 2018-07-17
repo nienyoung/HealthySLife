@@ -17,14 +17,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.content.Intent;
-import android.view.View;
 
 import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
 import com.example.admin.healthyslife_android.fragment.MapFragment;
-import com.example.admin.healthyslife_android.music.MusicActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
      * State of application, used to register for sensors when app is restored
      */
     public static final int STATE_STOP = 0;
-    public static final int STATE_START = 1;
+    public static final int STATE_PAUSE = 1;
+    public static final int STATE_START = 2;
 
     private static final String BUNDLE_STATE = "state";
     private static final String BUNDLE_LATENCY = "latency";
@@ -277,18 +274,6 @@ public class MainActivity extends AppCompatActivity {
             mTimerHandler.removeCallbacks(mTimerRunnable);
             mStartTime = 0;
             mSteps = 0;
-            MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(mPagerAdapter.getFragmentTag(MAP_FRAGMENT_POSITION));
-            if (mapFragment == null) {
-                Log.e(TAG, "Get map fragment fail");
-                return;
-            }
-            mapFragment.updateTimeText(0);
-            HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
-                    .findFragmentByTag(mPagerAdapter.getFragmentTag(HEALTHY_FRAGMENT_POSITION));
-            if (healthyFragment == null) {
-                Log.e(TAG, "Get healthy fragment fail");
-                return;
-            }
             mState = STATE_STOP;
         }
     };
