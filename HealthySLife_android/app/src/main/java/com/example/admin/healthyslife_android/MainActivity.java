@@ -288,6 +288,11 @@ public class MainActivity extends AppCompatActivity {
             mState = STATE_START;
             mSteps = 0;
             mStartTime = System.currentTimeMillis();
+            mVelX = 0;
+            mVelY = 0;
+            mVelZ = 0;
+            mLastTime = 0;
+            mToTalDis = 0;
             mTimerHandler.postDelayed(mTimerRunnable, 0);
             registerEventListener();
         }
