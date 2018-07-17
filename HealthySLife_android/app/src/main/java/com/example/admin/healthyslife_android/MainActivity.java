@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,MusicActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.leftin, R.anim.leftout);
             }
         });
     }

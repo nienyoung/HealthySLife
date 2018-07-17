@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_weight="1">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"   >
+
+        <LinearLayout
+            android:id="@+id/lrcLayout"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="2"
+            android:orientation="horizontal"  >
+            <ImageView
+                android:id="@+id/albumImage"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/img"   />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_marginLeft="10dp"
+                android:orientation="vertical"  >
+                <TextView
+                    android:id="@+id/playingSong"
+                    android:text="歌曲名"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:textSize="13dp"
+                    android:textColor="#0d0c0c"  />
+                <TextView
+                    android:id="@+id/playingSinger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:text="歌手"
+                    android:textSize="12sp"
+                    android:textColor="#0d0c0c"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/previousButton"
+                android:layout_width="40dp"
+                android:layout_height="25dp"
+                android:background="@drawable/round_rectangle"
+                android:textSize="13dp"
+                android:text="PREV"
+                android:textColor="#ffffff" />
+
+            <Button
+                android:id="@+id/isPlayButton"
+                android:layout_width="45dp"
+                android:layout_height="25dp"
+                android:background="@drawable/round_rectangle"
+                android:textSize="13dp"
+                android:text="PLAY"
+                android:textColor="#ffffff"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp" />
+
+            <Button
+                android:id="@+id/nextButton"
+                android:layout_width="45dp"
+                android:layout_height="25dp"
+                android:background="@drawable/round_rectangle"
+                android:textSize="13dp"
+                android:text="NEXT"
+                android:textColor="#ffffff"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TableRow
+        android:id="@+id/row1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+        <TextView
+            android:id="@+id/playingTime"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="00:00"
+            android:textSize="15dp"/>
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_weight="4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/totalTime"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="00:00"
+            android:textSize="15dp"/>
+    </TableRow>
+
+</LinearLayout>

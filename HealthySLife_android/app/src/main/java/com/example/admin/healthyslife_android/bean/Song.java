@@ -1,5 +1,7 @@
 package com.example.admin.healthyslife_android.bean;
 
+import android.graphics.Bitmap;
+
 public class Song {
     /**
      * 歌手
@@ -21,4 +23,12 @@ public class Song {
      * 歌曲的大小
      */
     public long size;
+    /*
+    *专辑图片
+     */
+    public String album;
+    public long albumId;
+    public Bitmap thumBitmap;
+
+    public long songId;
 }

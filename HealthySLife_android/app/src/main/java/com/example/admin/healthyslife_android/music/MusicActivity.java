@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
@@ -19,6 +20,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ListView;
@@ -40,6 +42,7 @@ public class MusicActivity extends AppCompatActivity {
     private Button isPlay;
     private Button previous;
     private Button next;
+    private ImageView albumImage;
 
     // private ObjectAnimator animator;
     private int flag = 0;
@@ -77,6 +80,9 @@ public class MusicActivity extends AppCompatActivity {
         seekBar.setMax(musicService.mediaPlayer.getDuration());
         playingSong.setText(list.get(0).song);
         playingSinger.setText(list.get(0).singer);
+        list.get(0).thumBitmap = MusicUtils.getArtwork(MusicActivity.this,list.get(0).songId,list.get(0).albumId,false,true);
+        if(list.get(0).thumBitmap!=null)
+        albumImage.setImageBitmap(list.get(0).thumBitmap);
 
 
         //设置列表循环播放
@@ -96,6 +102,7 @@ public class MusicActivity extends AppCompatActivity {
         isPlay = (Button) findViewById(R.id.isPlayButton);
         previous = (Button) findViewById(R.id.previousButton);
         next = (Button) findViewById(R.id.nextButton);
+        albumImage = (ImageView) findViewById(R.id.albumImage);
 
         seekBar = (SeekBar) findViewById(R.id.seekBar);
 
@@ -194,6 +201,10 @@ public class MusicActivity extends AppCompatActivity {
             musicService.playNewSong(cur.path);
             seekBar.setMax(musicService.mediaPlayer.getDuration());
 
+            cur.thumBitmap = MusicUtils.getArtwork(MusicActivity.this,cur.songId,cur.albumId,false,true);
+            if(cur.thumBitmap!=null)
+                albumImage.setImageBitmap(cur.thumBitmap);
+
             playingSong.setText(cur.song);
             playingSinger.setText(cur.singer);
         } catch (Exception e) {
@@ -255,9 +266,13 @@ public class MusicActivity extends AppCompatActivity {
         }
     };
 
+    /*
+    返回键跳转
+     */
     public void onBackPressed() {
         Intent intent = new Intent(MusicActivity.this,MainActivity.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.leftin, R.anim.leftout);
     }
 
     @Override

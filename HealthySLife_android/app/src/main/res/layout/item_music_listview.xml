@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:text="歌曲名"
             android:textColor="#0d0c0c"
-            android:textSize="15dp" />
+            android:textSize="13dp" />
 
 
         <TextView
