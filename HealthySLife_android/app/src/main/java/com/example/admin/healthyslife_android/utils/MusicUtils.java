@@ -58,7 +58,8 @@ public class MusicUtils {
             // 释放资源
             cursor.close();
         }
-
+        list.add(null);
+        list.add(null);
         return list;
     }
 

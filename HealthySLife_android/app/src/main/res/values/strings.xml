@@ -17,4 +17,6 @@
     <string name="main_healthy_stepFrequencyFormat">%.2f steps/min</string>
     <string name="main_healthy_avgSpeedFormat">%.2f m/s</string>
     <string name="main_map_musicButtonText">音乐</string>
+    <string name="main_map_getStepSensorFail">无法获取步数监测传感器</string>
+    <string name="main_map_getAccelerationSensorFail">无法获取加速度计</string>
 </resources>

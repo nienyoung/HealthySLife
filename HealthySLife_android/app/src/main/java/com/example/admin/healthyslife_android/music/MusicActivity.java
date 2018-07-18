@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
@@ -16,10 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
-import android.view.ViewConfiguration;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -28,11 +24,10 @@ import android.widget.AdapterView;
 
 import com.example.admin.healthyslife_android.MainActivity;
 import com.example.admin.healthyslife_android.R;
-import com.example.admin.healthyslife_android.adapter.MyAdapter;
+import com.example.admin.healthyslife_android.adapter.MusicListAdapter;
 import com.example.admin.healthyslife_android.bean.Song;
 import com.example.admin.healthyslife_android.utils.MusicUtils;
 
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +48,7 @@ public class MusicActivity extends AppCompatActivity {
 
     private ListView mListView;
     private List<Song> list;
-    private MyAdapter adapter;
+    private MusicListAdapter adapter;
     private int currentSongIndex;
 
     private TextView playingSong;
@@ -73,22 +68,24 @@ public class MusicActivity extends AppCompatActivity {
 
         //默认播放第一首
         musicService.resetPlayer();
-       String firstPath = list.get(0).path;
-        seekBar.setProgress(0);
-        musicService.initPlayer(firstPath);
-        seekBar.setMax(musicService.mediaPlayer.getDuration());
-        playingSong.setText(list.get(0).song);
-        playingSinger.setText(list.get(0).singer);
-        list.get(0).thumBitmap = MusicUtils.getArtwork(MusicActivity.this,list.get(0).songId,list.get(0).albumId,false,true);
-        if(list.get(0).thumBitmap!=null)
-        albumImage.setImageBitmap(list.get(0).thumBitmap);
+        if(list.get(0)!=null) {
+            String firstPath = list.get(0).path;
+            seekBar.setProgress(0);
+            musicService.initPlayer(firstPath);
+            seekBar.setMax(musicService.mediaPlayer.getDuration());
+            playingSong.setText(list.get(0).song);
+            playingSinger.setText(list.get(0).singer);
+            list.get(0).thumBitmap = MusicUtils.getArtwork(MusicActivity.this, list.get(0).songId, list.get(0).albumId, false, false);
+            if (list.get(0).thumBitmap != null)
+                albumImage.setImageBitmap(list.get(0).thumBitmap);
+        }
 
 
         //设置列表循环播放
         musicService.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
                 currentSongIndex++;
-                if (currentSongIndex >= list.size()) {
+                if (currentSongIndex > list.size()-3) {
                     currentSongIndex = 0;
                 }
                 play();
@@ -116,7 +113,7 @@ public class MusicActivity extends AppCompatActivity {
         list = new ArrayList<>();
         //把扫描到的音乐赋值给list
         list = MusicUtils.getMusicData(this);
-        adapter = new MyAdapter(this,list);
+        adapter = new MusicListAdapter(this,list);
         mListView.setAdapter(adapter);
     }
 
@@ -134,7 +131,8 @@ public class MusicActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             //获取点击的列表的中音乐的位置，赋值给当前播放音乐
             currentSongIndex = position;
-            //播放
+            if(currentSongIndex > list.size()-3){}
+            else
             play();
         }
     }
@@ -163,7 +161,7 @@ public class MusicActivity extends AppCompatActivity {
             //当前音乐播放位置--（上一曲）
             currentSongIndex--;
             if (currentSongIndex < 0) {
-                currentSongIndex = list.size() - 1;
+                currentSongIndex = list.size() - 3;
             }
                 play();
     }
@@ -172,7 +170,7 @@ public class MusicActivity extends AppCompatActivity {
 
         //当前音乐播放位置--（上一曲）
         currentSongIndex++;
-        if (currentSongIndex >= list.size()) {
+        if (currentSongIndex > list.size()-3) {
             currentSongIndex = 0;
         }
             play();

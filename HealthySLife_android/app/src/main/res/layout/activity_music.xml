@@ -132,7 +132,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#e8e8e8"
+        android:background="@drawable/bg_healthy_info"
         android:orientation="vertical">
         <include layout="@layout/music_bottom" />
     </RelativeLayout>

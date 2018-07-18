@@ -17,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
@@ -61,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private int mSteps;
     /**
+     * Total steps are calculated from this value
+     */
+    private int mCounterSteps = 0;
+    /**
      * Start exercise time
      */
     private long mStartTime = 0;
@@ -100,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
             }
             mapFragment.updateTimeText(millis);
             if (millis != 0) {
+                mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
+                mapFragment.updateSpeedText(mToTalDis * 1000 / millis);
                 HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
                         .findFragmentByTag(mPagerAdapter.getFragmentTag(HEALTHY_FRAGMENT_POSITION));
                 if (healthyFragment == null) {
@@ -133,6 +140,13 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(mOnPageChangeListener);
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         mBottomNavigationView.setSelectedItemId(R.id.navigation_exercise);
+    }
+
+    @Override
+    protected void onResume() {
+        verifyStoragePermissions(this);
+        super.onResume();
+        Log.d("hint", "handler post runnable");
     }
 
     @Override
@@ -177,33 +191,42 @@ public class MainActivity extends AppCompatActivity {
 
     private void resetCounter() {
         mSteps = 0;
+        mCounterSteps = 0;
     }
 
     private void registerEventListener() {
+        mCounterSteps = 0;
         // Get the default sensor for the sensor type from the SenorManager
         SensorManager sensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
         if (sensorManager == null) {
             Log.e(TAG, "Get sensor manager fail while registering listener");
             return;
         }
-        Sensor stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        Sensor stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        if (stepSensor == null) {
+            Toast.makeText(getApplicationContext(), R.string.main_map_getStepSensorFail, Toast.LENGTH_SHORT).show();
+        } else {
+            // Register the listener for this sensor in batch mode.
+            // If the max delay is 0, events will be delivered in continuous mode without batching.
+            final boolean stepBatchMode = sensorManager.registerListener(
+                    mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, mMaxDelay);
 
-        // Register the listener for this sensor in batch mode.
-        // If the max delay is 0, events will be delivered in continuous mode without batching.
-        final boolean stepBatchMode = sensorManager.registerListener(
-                mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, mMaxDelay);
-
-        if (!stepBatchMode) {
-            // Batch mode could not be enabled, show a warning message and switch to continuous mode
-            Log.w(TAG, "Could not register sensor listener in batch mode, " +
-                    "falling back to continuous mode.");
-            sensorManager.registerListener(
-                    mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0);
+            if (!stepBatchMode) {
+                // Batch mode could not be enabled, show a warning message and switch to continuous mode
+                Log.w(TAG, "Could not register sensor listener in batch mode, " +
+                        "falling back to continuous mode.");
+                sensorManager.registerListener(
+                        mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0);
+            }
         }
 
         Sensor accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        sensorManager.registerListener(
-                mAccelerateListener, accelerationSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (accelerationSensor == null) {
+            Toast.makeText(getApplicationContext(), R.string.main_map_getAccelerationSensorFail, Toast.LENGTH_SHORT).show();
+        } else {
+            sensorManager.registerListener(
+                    mAccelerateListener, accelerationSensor, SensorManager.SENSOR_DELAY_GAME);
+        }
     }
 
     /**
@@ -263,7 +286,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onStart() {
             mState = STATE_START;
+            mSteps = 0;
             mStartTime = System.currentTimeMillis();
+            mVelX = 0;
+            mVelY = 0;
+            mVelZ = 0;
+            mLastTime = 0;
+            mToTalDis = 0;
             mTimerHandler.postDelayed(mTimerRunnable, 0);
             registerEventListener();
         }
@@ -284,8 +313,14 @@ public class MainActivity extends AppCompatActivity {
     private final SensorEventListener mStepsListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-                mSteps += event.values.length;
+            if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+                if (mCounterSteps < 1) {
+                    // initial value
+                    mCounterSteps = (int) event.values[0];
+                }
+
+                // Calculate steps taken based on first counter value received.
+                mSteps = (int) event.values[0] - mCounterSteps;
 
                 // Update the text view with the latest step count
                 HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
@@ -295,6 +330,14 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 healthyFragment.updateStepCounterText(mSteps);
+
+                MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
+                        .findFragmentByTag(mPagerAdapter.getFragmentTag(MAP_FRAGMENT_POSITION));
+                if (mapFragment == null) {
+                    Log.e(TAG, "Get map fragment fail");
+                    return;
+                }
+                mapFragment.updateStepCounterText(mSteps);
             }
         }
 
@@ -366,12 +409,5 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
-    }
-
-    @Override
-    protected void onResume() {
-        verifyStoragePermissions(this);
-        super.onResume();
-        Log.d("hint", "handler post runnable");
     }
 }

@@ -13,10 +13,10 @@ import com.example.admin.healthyslife_android.utils.MusicUtils;
 
 import java.util.List;
 
-public class MyAdapter extends BaseAdapter {
+public class MusicListAdapter extends BaseAdapter {
     private Context context;
     private List<Song> list;
-    public MyAdapter(MusicActivity musicActivity, List<Song> list) {
+    public MusicListAdapter(MusicActivity musicActivity, List<Song> list) {
         this.context = musicActivity;
         this.list = list;
 
@@ -53,14 +53,27 @@ public class MyAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) view.getTag();
         }
-        //给控件赋值
-        holder.song.setText(list.get(i).song.toString());
-        holder.singer.setText(list.get(i).singer.toString());
-        //时间需要转换一下
-        int duration = list.get(i).duration;
-        String time = MusicUtils.formatTime(duration);
-        holder.duration.setText(time);
-        holder.position.setText(i+1+"");
+        if(list.get(i)==null) {
+
+            if(i<list.size()-1) {
+                holder.song.setText(null);
+            }else{
+                holder.song.setText("当前手机中暂无音乐,无法进行播放。");
+            }
+            holder.singer.setText(null);
+            holder.duration.setText(null);
+            holder.position.setText(null);
+
+        }else {
+            //给控件赋值
+            holder.song.setText(list.get(i).song.toString());
+            holder.singer.setText(list.get(i).singer.toString());
+            //时间需要转换一下
+            int duration = list.get(i).duration;
+            String time = MusicUtils.formatTime(duration);
+            holder.duration.setText(time);
+            holder.position.setText(i+1+"");
+        }
 
         return view;
     }
