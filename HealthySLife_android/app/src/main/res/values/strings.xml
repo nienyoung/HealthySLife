@@ -1,3 +1,22 @@
 <resources>
-    <string name="app_name">HealthySLife_android</string>
+    <string name="app_name">Healthy S Life</string>
+
+    <string name="title_activity_healthy">HealthyActivity</string>
+    <string name="title_exercise">运动</string>
+    <string name="title_healthy">健康</string>
+    <string name="hello_map_fragment">Hello map fragment</string>
+    <string name="main_healthy_stepCounterLabel">步数：</string>
+    <string name="main_healthy_stepFrequencyLabel">平均步频：</string>
+    <string name="main_healthy_speedLabel">平均速度：</string>
+    <string name="main_healthy_calorieLabel1">您本次运动共消耗了</string>
+    <string name="main_healthy_calorieLabel2">卡路里！</string>
+    <string name="main_healthy_share_label">分享</string>
+    <string name="main_map_startExercise">开始</string>
+    <string name="main_map_stopExercise">结束</string>
+    <string name="main_map_timeFormat">%02d:%02d:%02d</string>
+    <string name="main_healthy_stepFrequencyFormat">%.2f steps/min</string>
+    <string name="main_healthy_avgSpeedFormat">%.2f m/s</string>
+    <string name="main_map_musicButtonText">音乐</string>
+    <string name="main_map_getStepSensorFail">无法获取步数监测传感器</string>
+    <string name="main_map_getAccelerationSensorFail">无法获取加速度计</string>
 </resources>
