@@ -26,6 +26,7 @@ import com.example.admin.healthyslife_android.MainActivity;
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.adapter.MusicListAdapter;
 import com.example.admin.healthyslife_android.bean.Song;
+import com.example.admin.healthyslife_android.myWidget.MarqueTextView;
 import com.example.admin.healthyslife_android.utils.MusicUtils;
 
 import java.text.SimpleDateFormat;
@@ -51,7 +52,7 @@ public class MusicActivity extends AppCompatActivity {
     private MusicListAdapter adapter;
     private int currentSongIndex;
 
-    private TextView playingSong;
+    private MarqueTextView playingSong;
     private TextView playingSinger;
 
     @Override
@@ -104,7 +105,7 @@ public class MusicActivity extends AppCompatActivity {
 
         totalTime = (TextView) findViewById(R.id.totalTime);
         playingTime = (TextView) findViewById(R.id.playingTime);
-        playingSong = (TextView) findViewById(R.id.playingSong);
+        playingSong = (MarqueTextView) findViewById(R.id.playingSong);
         playingSinger = (TextView) findViewById(R.id.playingSinger);
     }
 

@@ -32,7 +32,7 @@
                 android:layout_height="45dp"
                 android:layout_marginLeft="10dp"
                 android:orientation="vertical"  >
-                <TextView
+                <com.example.admin.healthyslife_android.myWidget.MarqueTextView
                     android:id="@+id/playingSong"
                     android:text="歌曲名"
                     android:layout_width="wrap_content"
@@ -43,15 +43,16 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:textSize="13dp"
-                    android:textColor="#0d0c0c"  />
+                    android:textColor="@color/color_healthyInfo_font"/>
                 <TextView
                     android:id="@+id/playingSinger"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="2dp"
                     android:text="歌手"
                     android:textSize="12sp"
-                    android:textColor="#0d0c0c"/>
+                    android:textColor="@color/color_healthyInfo_font"/>
             </LinearLayout>
 
         </LinearLayout>

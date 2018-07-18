@@ -58,6 +58,7 @@ public class MusicUtils {
             // 释放资源
             cursor.close();
         }
+        //新增两条空记录使列表显示完整
         list.add(null);
         list.add(null);
         return list;
