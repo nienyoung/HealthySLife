@@ -30,6 +30,7 @@ public class MapFragment extends Fragment {
     private Button mStartButton;
     private Button mStopButton;
 
+    private View mHealthyInfoView;
     private TextView mStepsTextView;
     private TextView mStepFrequencyTextView;
     private TextView mSpeedTextView;
@@ -96,6 +97,8 @@ public class MapFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        mHealthyInfoView = view.findViewById(R.id.main_map_healthyInfo);
+        mHealthyInfoView.setVisibility(View.GONE);
         mStepsTextView = view.findViewById(R.id.tv_map_stepCounter);
         mStepFrequencyTextView = view.findViewById(R.id.tv_map_stepFrequency);
         mSpeedTextView = view.findViewById(R.id.tv_map_speed);
@@ -115,6 +118,14 @@ public class MapFragment extends Fragment {
 
     public void updateSpeedText(double speed) {
         mSpeedTextView.setText(getString(R.string.main_healthy_avgSpeedFormat, speed));
+    }
+
+    public void showHealthyInfo() {
+        mHealthyInfoView.setVisibility(View.VISIBLE);
+    }
+
+    public void hideHealthyInfo() {
+        mHealthyInfoView.setVisibility(View.GONE);
     }
 
     private String getTimeText(long time) {

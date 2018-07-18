@@ -10,6 +10,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -98,20 +99,16 @@ public class MainActivity extends AppCompatActivity {
             long millis = System.currentTimeMillis() - mStartTime;
 
             // update time text view
-            MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(mPagerAdapter.getFragmentTag(MAP_FRAGMENT_POSITION));
+            MapFragment mapFragment = getMapFragment();
             if (mapFragment == null) {
-                Log.e(TAG, "Get map fragment fail");
                 return;
             }
             mapFragment.updateTimeText(millis);
             if (millis != 0) {
                 mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
                 mapFragment.updateSpeedText(mToTalDis * 1000 / millis);
-                HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
-                        .findFragmentByTag(mPagerAdapter.getFragmentTag(HEALTHY_FRAGMENT_POSITION));
-                if (healthyFragment == null) {
-                    Log.e(TAG, "Get healthy fragment fail");
-                } else {
+                HealthyFragment healthyFragment = getHealthyFragment();
+                if (healthyFragment != null) {
                     healthyFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
                     healthyFragment.updateSpeedText(mToTalDis * 1000 / millis);
                 }
@@ -187,6 +184,28 @@ public class MainActivity extends AppCompatActivity {
                 registerEventListener();
             }
         }
+    }
+
+    @Nullable
+    private MapFragment getMapFragment() {
+        MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
+                .findFragmentByTag(mPagerAdapter.getFragmentTag(MAP_FRAGMENT_POSITION));
+        if (mapFragment == null) {
+            Log.e(TAG, "Get map fragment fail");
+            return null;
+        }
+        return mapFragment;
+    }
+
+    @Nullable
+    private HealthyFragment getHealthyFragment() {
+        HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
+                .findFragmentByTag(mPagerAdapter.getFragmentTag(HEALTHY_FRAGMENT_POSITION));
+        if (healthyFragment == null) {
+            Log.e(TAG, "Get healthy fragment fail");
+            return null;
+        }
+        return healthyFragment;
     }
 
     private void resetCounter() {
@@ -295,10 +314,18 @@ public class MainActivity extends AppCompatActivity {
             mToTalDis = 0;
             mTimerHandler.postDelayed(mTimerRunnable, 0);
             registerEventListener();
+            MapFragment mapFragment = getMapFragment();
+            if (mapFragment != null) {
+                mapFragment.showHealthyInfo();
+            }
         }
 
         @Override
         public void onStop() {
+            MapFragment mapFragment = getMapFragment();
+            if (mapFragment != null) {
+                mapFragment.hideHealthyInfo();
+            }
             unregisterListeners();
             mTimerHandler.removeCallbacks(mTimerRunnable);
             mStartTime = 0;
@@ -323,18 +350,14 @@ public class MainActivity extends AppCompatActivity {
                 mSteps = (int) event.values[0] - mCounterSteps;
 
                 // Update the text view with the latest step count
-                HealthyFragment healthyFragment = (HealthyFragment) getSupportFragmentManager()
-                        .findFragmentByTag(mPagerAdapter.getFragmentTag(HEALTHY_FRAGMENT_POSITION));
+                HealthyFragment healthyFragment = getHealthyFragment();
                 if (healthyFragment == null) {
-                    Log.e(TAG, "Get healthy fragment fail");
                     return;
                 }
                 healthyFragment.updateStepCounterText(mSteps);
 
-                MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
-                        .findFragmentByTag(mPagerAdapter.getFragmentTag(MAP_FRAGMENT_POSITION));
+                MapFragment mapFragment = getMapFragment();
                 if (mapFragment == null) {
-                    Log.e(TAG, "Get map fragment fail");
                     return;
                 }
                 mapFragment.updateStepCounterText(mSteps);
