@@ -6,6 +6,8 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -55,31 +57,34 @@ public class MusicActivity extends AppCompatActivity {
     private MarqueTextView playingSong;
     private TextView playingSinger;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
 
         bindServiceConnection();
-        musicService = new MusicService();
 
         initView();
         initListView();
         setListener();
 
-        //默认播放第一首
-        musicService.resetPlayer();
-        if(list.get(0)!=null) {
-            String firstPath = list.get(0).path;
-            seekBar.setProgress(0);
-            musicService.initPlayer(firstPath);
-            seekBar.setMax(musicService.mediaPlayer.getDuration());
-            playingSong.setText(list.get(0).song);
-            playingSinger.setText(list.get(0).singer);
-            list.get(0).thumBitmap = MusicUtils.getArtwork(MusicActivity.this, list.get(0).songId, list.get(0).albumId, false, false);
-            if (list.get(0).thumBitmap != null)
-                albumImage.setImageBitmap(list.get(0).thumBitmap);
-        }
+            //默认播放第一首
+            musicService = new MusicService();
+            musicService.resetPlayer();
+            if (list.get(0) != null) {
+                String firstPath = list.get(0).path;
+                seekBar.setProgress(0);
+                musicService.initPlayer(firstPath);
+                seekBar.setMax(musicService.mediaPlayer.getDuration());
+                playingSong.setText(list.get(0).song);
+                playingSinger.setText(list.get(0).singer);
+                list.get(0).thumBitmap = MusicUtils.getArtwork(MusicActivity.this, list.get(0).songId, list.get(0).albumId, false, false);
+                if (list.get(0).thumBitmap != null)
+                    albumImage.setImageBitmap(list.get(0).thumBitmap);
+            }
+
+
 
 
         //设置列表循环播放
@@ -230,7 +235,6 @@ public class MusicActivity extends AppCompatActivity {
         startService(intent);
         bindService(intent, sc, this.BIND_AUTO_CREATE);
     }
-
     public Handler handler = new Handler();
     public Runnable runnable = new Runnable() {
         @Override
@@ -265,12 +269,11 @@ public class MusicActivity extends AppCompatActivity {
     };
 
     /*
-    返回键跳转
-     */
+    返回键跳转*/
     public void onBackPressed() {
-        Intent intent = new Intent(MusicActivity.this,MainActivity.class);
-        startActivity(intent);
-        super.onStop();
+        //Intent intent = new Intent(MusicActivity.this,MainActivity.class);
+       // startActivity(intent);
+        super.onBackPressed();
         overridePendingTransition(R.anim.leftin, R.anim.leftout);
     }
 
@@ -308,7 +311,7 @@ public class MusicActivity extends AppCompatActivity {
     }
     @Override
     public void onDestroy() {
-        unbindService(sc);
+        //unbindService(sc);
         super.onDestroy();
     }
 
@@ -352,4 +355,5 @@ public class MusicActivity extends AppCompatActivity {
             );
         }
     }
+
 }

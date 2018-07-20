@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_key_user_settings">pref_key_user_settings</string>
+    <string name="pref_key_user_height">pref_key_user_height</string>
+    <string name="pref_key_user_weight">pref_key_user_weight</string>
+
+    <!--title-->
+    <string name="pref_title_user_settings">用户信息</string>
+    <string name="pref_title_user_height">身高（cm）</string>
+    <string name="pref_title_user_weight">体重（kg）</string>
+
+    <!--summary-->
+    <string name="pref_summary_user_height">请在此输入身高信息</string>
+    <string name="pref_summary_user_weight">请在此输入体重信息</string>
+
+</resources>
