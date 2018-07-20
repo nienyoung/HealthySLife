@@ -66,13 +66,14 @@
         app:layout_constraintStart_toStartOf="@+id/btn_map_startRun" />
 
     <LinearLayout
+        android:id="@+id/main_map_healthyInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:background="@drawable/bg_healthy_info"
-        android:padding="8dp"
         android:orientation="vertical"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -86,8 +87,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/main_healthy_stepCounterLabel"
-                android:textSize="@dimen/healthyInfo_text_size"
-                android:textColor="@color/color_healthyInfo_font" />
+                android:textColor="@color/color_healthyInfo_font"
+                android:textSize="@dimen/healthyInfo_text_size" />
 
             <TextView
                 android:id="@+id/tv_map_stepCounter"
@@ -95,8 +96,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="0"
-                android:textSize="@dimen/healthyInfo_text_size"
-                android:textColor="@color/color_healthyInfo_font" />
+                android:textColor="@color/color_healthyInfo_font"
+                android:textSize="@dimen/healthyInfo_text_size" />
 
         </LinearLayout>
 
@@ -110,8 +111,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/main_healthy_stepFrequencyLabel"
-                android:textSize="@dimen/healthyInfo_text_size"
-                android:textColor="@color/color_healthyInfo_font" />
+                android:textColor="@color/color_healthyInfo_font"
+                android:textSize="@dimen/healthyInfo_text_size" />
 
             <TextView
                 android:id="@+id/tv_map_stepFrequency"
@@ -119,8 +120,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="0.00 steps/min"
-                android:textSize="@dimen/healthyInfo_text_size"
-                android:textColor="@color/color_healthyInfo_font" />
+                android:textColor="@color/color_healthyInfo_font"
+                android:textSize="@dimen/healthyInfo_text_size" />
 
         </LinearLayout>
 
@@ -134,8 +135,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/main_healthy_speedLabel"
-                android:textSize="@dimen/healthyInfo_text_size"
-                android:textColor="@color/color_healthyInfo_font" />
+                android:textColor="@color/color_healthyInfo_font"
+                android:textSize="@dimen/healthyInfo_text_size" />
 
             <TextView
                 android:id="@+id/tv_map_speed"
@@ -143,8 +144,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="0.00 m/s"
-                android:textSize="@dimen/healthyInfo_text_size"
-                android:textColor="@color/color_healthyInfo_font" />
+                android:textColor="@color/color_healthyInfo_font"
+                android:textSize="@dimen/healthyInfo_text_size" />
 
         </LinearLayout>
 
