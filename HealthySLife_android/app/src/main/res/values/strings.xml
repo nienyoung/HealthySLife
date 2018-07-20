@@ -20,4 +20,9 @@
     <string name="main_map_settingsButtonText">设置</string>
     <string name="main_map_getStepSensorFail">无法获取步数监测传感器</string>
     <string name="main_map_getAccelerationSensorFail">无法获取加速度计</string>
+    <string name="request_permission">心跳监测功能需要摄像头权限并打开闪光灯</string>
+    <string name="camera_error">无法打开相机</string>
+    <string name="main_healthy_startMonitor">检测心率</string>
+    <string name="main_healthy_monitorTips">请将手指置于手机摄像头处</string>
+    <string name="main_healthy_heartRateFormat">您当前心率为%d次/分</string>
 </resources>

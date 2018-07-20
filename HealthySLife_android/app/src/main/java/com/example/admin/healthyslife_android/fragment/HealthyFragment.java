@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,8 @@ import com.example.admin.healthyslife_android.R;
  * @author wu jingji
  */
 public class HealthyFragment extends Fragment {
+
+    public static final String TAG = "HealthyFragment";
 
     private TextView mStepsTextView;
     private TextView mStepFrequencyTextView;
@@ -38,7 +42,15 @@ public class HealthyFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_healthy, container, false);
+        View inflate = inflater.inflate(R.layout.fragment_healthy, container, false);
+
+        FragmentManager fm = getFragmentManager();
+        if (fm == null) {
+            Log.i(TAG, "onCreateView: cannot get fragment manager");
+        } else {
+            fm.beginTransaction().add(R.id.healthy_heartRateContainer, HeartRateMonitorFragment.newInstance()).commit();
+        }
+        return inflate;
     }
 
     @Override
