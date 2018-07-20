@@ -10,15 +10,12 @@ import com.example.admin.healthyslife_android.fragment.SettingsFragment;
 
 public class SettingsActivity extends Activity {
 
-    public static SettingsActivity instance;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
-        instance = this;
 
     }
 

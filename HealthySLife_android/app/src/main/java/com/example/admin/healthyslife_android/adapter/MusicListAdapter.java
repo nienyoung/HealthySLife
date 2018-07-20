@@ -53,12 +53,16 @@ public class MusicListAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) view.getTag();
         }
+
         if(list.get(i)==null) {
 
             if(i<list.size()-1) {
                 holder.song.setText(null);
             }else{
+                if(list.size()==2)
                 holder.song.setText("当前手机中暂无音乐,无法进行播放。");
+                else
+                    holder.song.setText(null);
             }
             holder.singer.setText(null);
             holder.duration.setText(null);

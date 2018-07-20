@@ -96,9 +96,9 @@ public class MainActivity extends AppCompatActivity {
     /**
      * permanent data
      */
-    private SharedPreferences settings = SettingsActivity.instance.getSharedPreferences("mySettings", MODE_PRIVATE);
-    private String nowHeight = settings.getString("pref_key_user_height", "0");
-    private String nowWeight = settings.getString("pref_key_user_weight", "0");
+    private SharedPreferences settings;
+    private String nowHeight;
+    private String nowWeight;
 
     private Handler mTimerHandler = new Handler();
     private Runnable mTimerRunnable = new Runnable() {
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigationView.setSelectedItemId(R.id.navigation_exercise);
 
         //get height and weight from settings
-        settings = SettingsActivity.instance.getSharedPreferences("mySettings", MODE_PRIVATE);
+        settings = this.getSharedPreferences("mySettings", MODE_PRIVATE);
         nowHeight = settings.getString("pref_key_user_height", "0");
         nowWeight = settings.getString("pref_key_user_weight", "0");
     }

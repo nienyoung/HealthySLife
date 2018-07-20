@@ -15,29 +15,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageView
         android:id="@+id/btn_map_settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/round_rectangle"
-        android:text="@string/main_map_settingsButtonText"
-        android:textColor="@color/color_font_white"
-        android:textSize="@dimen/button_text_size"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/settings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageView
         android:id="@+id/btn_map_music"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="86dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/round_rectangle"
-        android:text="@string/main_map_musicButtonText"
-        android:textColor="@color/color_font_white"
-        android:textSize="@dimen/button_text_size"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
+        android:layout_marginRight="55dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/music"
         app:layout_constraintEnd_toEndOf="@id/btn_map_settings"
         app:layout_constraintTop_toTopOf="parent" />
 
