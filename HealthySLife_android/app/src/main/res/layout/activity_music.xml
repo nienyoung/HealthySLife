@@ -13,7 +13,7 @@
         android:layout_height="match_parent"/>
 
 
-    <RelativeLayout
+    <!--RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -86,6 +86,15 @@
         android:gravity="center_horizontal"
         android:padding="10dp">
 
+        <ImageView
+            android:id="@+id/albumImage"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="center"
+            android:layout_marginRight="40dp"
+            android:src="@mipmap/img"/>
+
         <Button
             android:id="@+id/previousButton"
             android:layout_width="50dp"
@@ -117,6 +126,15 @@
 
     </TableRow>
 
+    </RelativeLayout-->
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bg_healthy_info"
+        android:orientation="vertical">
+        <include layout="@layout/music_bottom" />
     </RelativeLayout>
 
 </RelativeLayout>

@@ -7,7 +7,7 @@
     android:padding="5dp">
     <TextView
         android:id="@+id/item_mymusic_postion"
-        android:layout_width="wrap_content"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:text="1"
@@ -18,7 +18,7 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="5dp"
         >
 
         <TextView
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:text="歌曲名"
             android:textColor="#0d0c0c"
-            android:textSize="15dp" />
+            android:textSize="13dp" />
 
 
         <TextView

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.music.MusicActivity;
+import com.example.admin.healthyslife_android.settings.SettingsActivity;
 
 
 /**
@@ -95,6 +96,17 @@ public class MapFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), MusicActivity.class);
                 startActivity(intent);
+                //切换效果
+                getActivity().overridePendingTransition(R.anim.leftin, R.anim.leftout);
+            }
+        });
+        view.findViewById(R.id.btn_map_settings).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
+                //切换效果
+                getActivity().overridePendingTransition(R.anim.leftin, R.anim.leftout);
             }
         });
         mHealthyInfoView = view.findViewById(R.id.main_map_healthyInfo);

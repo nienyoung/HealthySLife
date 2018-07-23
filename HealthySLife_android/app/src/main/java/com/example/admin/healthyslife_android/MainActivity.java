@@ -2,6 +2,7 @@ package com.example.admin.healthyslife_android;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
 import com.example.admin.healthyslife_android.fragment.MapFragment;
+import com.example.admin.healthyslife_android.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +93,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private double mToTalDis = 0;
 
+    /**
+     * permanent data
+     */
+    private SharedPreferences settings;
+    private String nowHeight;
+    private String nowWeight;
+
     private Handler mTimerHandler = new Handler();
     private Runnable mTimerRunnable = new Runnable() {
 
@@ -126,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = findViewById(R.id.main_viewPager);
         mBottomNavigationView = findViewById(R.id.bottomNavigation);
 
+
         MapFragment mapFragment = MapFragment.newInstance(onExerciseStateChangeListener);
         HealthyFragment healthyFragment = HealthyFragment.newInstance();
         List<Fragment> fragmentList = new ArrayList<>();
@@ -137,6 +147,11 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(mOnPageChangeListener);
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         mBottomNavigationView.setSelectedItemId(R.id.navigation_exercise);
+
+        //get height and weight from settings
+        settings = this.getSharedPreferences("mySettings", MODE_PRIVATE);
+        nowHeight = settings.getString("pref_key_user_height", "0");
+        nowWeight = settings.getString("pref_key_user_weight", "0");
     }
 
     @Override
@@ -152,8 +167,15 @@ public class MainActivity extends AppCompatActivity {
             unregisterListeners();
             mTimerHandler.removeCallbacks(mTimerRunnable);
         }
+
         super.onDestroy();
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
 
     /**
      * Records the state of the application into the {@link android.os.Bundle}.
@@ -432,5 +454,11 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        System.exit(0);
     }
 }

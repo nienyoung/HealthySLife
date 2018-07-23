@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!--透明切换-->
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="bottomNavigationStyle" parent="Widget.Design.BottomNavigationView">
