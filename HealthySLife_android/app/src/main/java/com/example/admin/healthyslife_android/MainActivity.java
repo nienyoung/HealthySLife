@@ -24,10 +24,11 @@ import android.widget.Toast;
 import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
 import com.example.admin.healthyslife_android.fragment.MapFragment;
-import com.example.admin.healthyslife_android.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.admin.healthyslife_android.utils.HealthyUils.calorieCalculator;
 
 /**
  * @author wu jingji
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Max batch latency is specified in microseconds
      */
-    private int mMaxDelay = 2000000;
+    private int mMaxDelay = 0;
     /**
      * Steps counter
      */
@@ -97,8 +98,6 @@ public class MainActivity extends AppCompatActivity {
      * permanent data
      */
     private SharedPreferences settings;
-    private String nowHeight;
-    private String nowWeight;
 
     private Handler mTimerHandler = new Handler();
     private Runnable mTimerRunnable = new Runnable() {
@@ -115,11 +114,14 @@ public class MainActivity extends AppCompatActivity {
             mapFragment.updateTimeText(millis);
             if (millis != 0) {
                 mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
-                mapFragment.updateSpeedText(mToTalDis * 1000 / millis);
+                double velocity = mToTalDis * 1000 / millis;
+                float calorie = calorieCalculator(getWeight(), millis / 1000, (float) velocity);
+                mapFragment.updateSpeedText(velocity);
                 HealthyFragment healthyFragment = getHealthyFragment();
                 if (healthyFragment != null) {
                     healthyFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
-                    healthyFragment.updateSpeedText(mToTalDis * 1000 / millis);
+                    healthyFragment.updateSpeedText(velocity);
+                    healthyFragment.updateCalorie(calorie);
                 }
             }
 
@@ -150,8 +152,6 @@ public class MainActivity extends AppCompatActivity {
 
         //get height and weight from settings
         settings = this.getSharedPreferences("mySettings", MODE_PRIVATE);
-        nowHeight = settings.getString("pref_key_user_height", "0");
-        nowWeight = settings.getString("pref_key_user_weight", "0");
     }
 
     @Override
@@ -228,6 +228,16 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
         return healthyFragment;
+    }
+
+    @NonNull
+    private float getHeight() {
+        return Float.parseFloat(settings.getString("pref_key_user_height", "0"));
+    }
+
+    @NonNull
+    private float getWeight() {
+        return Float.parseFloat(settings.getString("pref_key_user_weight", "0"));
     }
 
     private void resetCounter() {

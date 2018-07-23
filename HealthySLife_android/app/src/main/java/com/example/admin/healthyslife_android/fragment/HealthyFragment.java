@@ -51,7 +51,7 @@ public class HealthyFragment extends Fragment {
         if (fm == null) {
             Log.i(TAG, "onCreateView: cannot get fragment manager");
         } else {
-            fm.beginTransaction().add(R.id.healthy_heartRateContainer, HeartRateMonitorFragment.newInstance()).commit();
+            fm.beginTransaction().add(R.id.healthy_heartRateContainer, HeartRateMonitorFragment.newInstance()).commitAllowingStateLoss();
         }
         return inflate;
     }
