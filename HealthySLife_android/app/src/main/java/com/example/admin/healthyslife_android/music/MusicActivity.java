@@ -271,9 +271,10 @@ public class MusicActivity extends AppCompatActivity {
     /*
     返回键跳转*/
     public void onBackPressed() {
-        //Intent intent = new Intent(MusicActivity.this,MainActivity.class);
-       // startActivity(intent);
-        super.onBackPressed();
+        Intent intent = new Intent(MusicActivity.this,MainActivity.class);
+        startActivity(intent);
+        //super.onBackPressed();
+
         overridePendingTransition(R.anim.leftin, R.anim.leftout);
     }
 

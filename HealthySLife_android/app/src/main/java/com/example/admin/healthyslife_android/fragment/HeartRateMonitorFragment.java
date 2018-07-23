@@ -27,9 +27,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -49,19 +47,8 @@ import static com.example.admin.healthyslife_android.utils.ImageUtil.decodeYUV42
  */
 public class HeartRateMonitorFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    /**
-     * Conversion from screen rotation to JPEG orientation.
-     */
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final String FRAGMENT_DIALOG = "dialog";
-
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
 
     /**
      * Tag for the {@link Log}.
