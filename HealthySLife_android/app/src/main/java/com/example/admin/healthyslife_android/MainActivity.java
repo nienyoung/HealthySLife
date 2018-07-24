@@ -70,9 +70,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private int mCounterSteps = 0;
     /**
-     * Start exercise time
+     * Record last timer time
      */
-    private long mStartTime = 0;
+    private long mLastTime = 0;
+    /**
+     * Total run time
+     */
+    private long mTotalTime = 0;
     /**
      * Runner's velocity in X-axis
      */
@@ -88,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Timestamp the latest event happened in microseconds
      */
-    private long mLastTime = 0;
+    private long mLastEventTime = 0;
     /**
      * Total distance the user run
      */
@@ -104,22 +108,24 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            long millis = System.currentTimeMillis() - mStartTime;
+            long currentTime = System.currentTimeMillis();
+            mTotalTime += currentTime - mLastTime;
+            mLastTime = currentTime;
 
             // update time text view
             MapFragment mapFragment = getMapFragment();
             if (mapFragment == null) {
                 return;
             }
-            mapFragment.updateTimeText(millis);
-            if (millis != 0) {
-                mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
-                double velocity = mToTalDis * 1000 / millis;
-                float calorie = calorieCalculator(getWeight(), millis / 1000, (float) velocity);
+            mapFragment.updateTimeText(mTotalTime);
+            if (mTotalTime != 0) {
+                mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / mTotalTime);
+                double velocity = mToTalDis * 1000 / mTotalTime;
+                float calorie = calorieCalculator(getWeight(), mTotalTime / 1000, (float) velocity);
                 mapFragment.updateSpeedText(velocity);
                 HealthyFragment healthyFragment = getHealthyFragment();
                 if (healthyFragment != null) {
-                    healthyFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
+                    healthyFragment.updateStepFrequencyText((double) (mSteps * 60000) / mTotalTime);
                     healthyFragment.updateSpeedText(velocity);
                     healthyFragment.updateCalorie(calorie);
                 }
@@ -189,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt(BUNDLE_STATE, mState);
         outState.putInt(BUNDLE_LATENCY, mMaxDelay);
         outState.putInt(BUNDLE_STEPS, mSteps);
-        outState.putLong(BUNDLE_TIME, mStartTime);
+        outState.putLong(BUNDLE_TIME, mTotalTime);
     }
 
     @Override
@@ -200,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
             mSteps = savedInstanceState.getInt(BUNDLE_STEPS);
             mMaxDelay = savedInstanceState.getInt(BUNDLE_LATENCY);
             mState = savedInstanceState.getInt(BUNDLE_STATE);
-            mStartTime = savedInstanceState.getLong(BUNDLE_TIME);
+            mTotalTime = savedInstanceState.getLong(BUNDLE_TIME);
 
             if (mState == STATE_START) {
                 registerEventListener();
@@ -337,12 +343,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onStart() {
             mState = STATE_START;
+            mCounterSteps = 0;
             mSteps = 0;
-            mStartTime = System.currentTimeMillis();
+            mLastTime = System.currentTimeMillis();
+            mTotalTime = 0;
             mVelX = 0;
             mVelY = 0;
             mVelZ = 0;
-            mLastTime = 0;
+            mLastEventTime = 0;
             mToTalDis = 0;
             mTimerHandler.postDelayed(mTimerRunnable, 0);
             registerEventListener();
@@ -353,6 +361,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onPause() {
+            mState = STATE_PAUSE;
+            mTimerHandler.removeCallbacks(mTimerRunnable);
+        }
+
+        @Override
+        public void onContinue() {
+            mState = STATE_START;
+            mLastTime = System.currentTimeMillis();
+            mVelX = 0;
+            mVelY = 0;
+            mVelZ = 0;
+            mLastEventTime = 0;
+            mTimerHandler.postDelayed(mTimerRunnable, 0);
+        }
+
+        @Override
         public void onStop() {
             MapFragment mapFragment = getMapFragment();
             if (mapFragment != null) {
@@ -360,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
             }
             unregisterListeners();
             mTimerHandler.removeCallbacks(mTimerRunnable);
-            mStartTime = 0;
+            mLastTime = 0;
             mSteps = 0;
             mState = STATE_STOP;
         }
@@ -379,7 +404,10 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // Calculate steps taken based on first counter value received.
-                mSteps = (int) event.values[0] - mCounterSteps;
+                if (mState == STATE_START) {
+                    mSteps += (int) event.values[0] - mCounterSteps;
+                }
+                mCounterSteps = (int) event.values[0];
 
                 // Update the text view with the latest step count
                 HealthyFragment healthyFragment = getHealthyFragment();
@@ -408,8 +436,8 @@ public class MainActivity extends AppCompatActivity {
         public void onSensorChanged(SensorEvent event) {
             if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
                 final long t = event.timestamp / 1000;
-                if (mLastTime != 0) {
-                    final float dT = (float) (t - mLastTime) / 1000000.f;
+                if (mLastEventTime != 0) {
+                    final float dT = (float) (t - mLastEventTime) / 1000000.f;
 
                     final float aX = event.values[0];
                     final float aY = event.values[1];
@@ -428,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
                     // s = (sx^2 + sy^2 + sz^2)^0.5
                     mToTalDis += Math.sqrt(mDisX * mDisX + mDisY * mDisY + mDisZ * mDisZ);
                 }
-                mLastTime = t;
+                mLastEventTime = t;
             }
         }
 

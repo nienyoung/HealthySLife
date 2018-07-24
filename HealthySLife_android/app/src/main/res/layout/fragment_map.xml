@@ -48,6 +48,19 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
+        android:id="@+id/btn_map_pauseRun"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
+        android:layout_marginBottom="@dimen/fab_marginSpace"
+        android:background="@drawable/bg_circle_button_pause"
+        android:text="@string/main_map_pauseExercise"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/btn_map_startRun"
+        app:layout_constraintEnd_toEndOf="@+id/btn_map_startRun"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/btn_map_startRun" />
+
+    <Button
         android:id="@+id/btn_map_stopRun"
         android:layout_width="@dimen/fab_size"
         android:layout_height="@dimen/fab_size"
@@ -55,8 +68,9 @@
         android:background="@drawable/bg_circle_button_stop"
         android:text="@string/main_map_stopExercise"
         android:textColor="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/btn_map_startRun"
+        app:layout_constraintBottom_toTopOf="@+id/btn_map_pauseRun"
         app:layout_constraintEnd_toEndOf="@+id/btn_map_startRun"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/btn_map_startRun" />
 
     <LinearLayout
