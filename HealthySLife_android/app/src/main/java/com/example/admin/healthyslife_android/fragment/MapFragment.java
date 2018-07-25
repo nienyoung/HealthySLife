@@ -30,6 +30,7 @@ import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.mapapi.model.LatLng;
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.music.MusicActivity;
@@ -128,9 +129,6 @@ public class MapFragment extends Fragment {
             requestLocation();
         }
 
-
-
-
         mState = STATE_STOP;
         final Animation fadeInAnim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
         final Animation fadeOutAnim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
@@ -179,6 +177,7 @@ public class MapFragment extends Fragment {
                     mState = STATE_START;
                     button.setText(getTimeText(0));
                     onExerciseStateChangeListener.onStart();
+                    mBaiduMap.clear();
                     mPauseButton.setVisibility(View.VISIBLE);
                     mPauseButton.startAnimation(fadeInAnim);
                     mStopButton.setVisibility(View.VISIBLE);
@@ -329,7 +328,7 @@ public class MapFragment extends Fragment {
             LatLng newPoint = new LatLng(location.getLatitude(), location.getAltitude());
             double deltaDistance = 0;
             if (mLastPoint != null) {
-                deltaDistance = getDistance(newPoint, mLastPoint);
+                deltaDistance = DistanceUtil.getDistance(newPoint, mLastPoint);
             }
             mTotalDistance += deltaDistance;
             mLastPoint = newPoint;
