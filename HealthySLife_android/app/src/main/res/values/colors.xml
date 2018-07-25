@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#339900</color>
+    <color name="colorPrimaryDark">#339900</color>
+    <color name="colorAccent">#33cc00</color>
+
+    <color name="color_icon_green">#33cc00</color>
+    <color name="color_icon_green_pressed">#2fa408</color>
+    <color name="color_icon_red">#ff0000</color>
+    <color name="color_icon_red_pressed">#ba0000</color>
+    <color name="color_font_green">#339900</color>
+    <color name="font_gray">#6b6b6b</color>
+    <color name="color_font_white">#ffffff</color>
+    
+    <color name="color_navigation_unselected">#868686</color>
+    <color name="color_navigation_selected">#339900</color>
+    <color name="color_navigation_highlight">#74a71c</color>
+
+    <color name="color_healthyInfo_bg">#ededed</color>
+    <color name="color_healthyInfo_font">#3d3d3d</color>
+
+    <color name="color_healthyTips_font">#a8a8a8</color>
 </resources>
