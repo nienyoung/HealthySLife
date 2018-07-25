@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+
 import com.example.admin.healthyslife_android.R;
 
 import static android.content.Context.MODE_PRIVATE;

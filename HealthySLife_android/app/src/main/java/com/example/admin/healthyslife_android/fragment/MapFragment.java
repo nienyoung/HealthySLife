@@ -1,25 +1,14 @@
 package com.example.admin.healthyslife_android.fragment;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,33 +20,23 @@ import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.DotOptions;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.example.admin.healthyslife_android.MainActivity;
-
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.music.MusicActivity;
 import com.example.admin.healthyslife_android.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.support.v4.content.ContextCompat.getSystemService;
 
 
 /**
@@ -69,7 +48,7 @@ public class MapFragment extends Fragment {
     public static final int STATE_PAUSE = 1;
     public static final int STATE_START = 2;
 
-    public static double mTotalDistance;
+    private double mTotalDistance;
 
     private int mState;
     private Button mStartButton;
@@ -346,15 +325,14 @@ public class MapFragment extends Fragment {
         MyLocationData locationData = locationBuilder.build();
         mBaiduMap.setMyLocationData(locationData);
         /*draw*/
-        if (mState == STATE_START)
-        {
-            LatLng nEWpOINT = new LatLng(location.getLatitude(), location.getAltitude());
+        if (mState == STATE_START) {
+            LatLng newPoint = new LatLng(location.getLatitude(), location.getAltitude());
             double deltaDistance = 0;
             if (mLastPoint != null) {
-                deltaDistance = getDistance(nEWpOINT, mLastPoint);
+                deltaDistance = getDistance(newPoint, mLastPoint);
             }
             mTotalDistance += deltaDistance;
-            mLastPoint = nEWpOINT;
+            mLastPoint = newPoint;
             mVelocity = deltaDistance;
             points.add(new LatLng(location.getLatitude(),location.getLongitude()));
             OverlayOptions ooPolyline = new PolylineOptions().width(10).color(0xAAFF0000).points(points);
@@ -363,12 +341,11 @@ public class MapFragment extends Fragment {
 
     }
 
-    public static double getTotalDistance() {
+    public double getTotalDistance() {
         return mTotalDistance;
     }
 
-    private static double getDistance(LatLng p1, LatLng p2)
-    {
+    private static double getDistance(LatLng p1, LatLng p2) {
         double lat1, lng1, lat2, lng2;
         lat1 = p1.latitude;
         lng1 = p1.longitude;
@@ -381,7 +358,9 @@ public class MapFragment extends Fragment {
 
         double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a/2),2) +
                 Math.cos(radLat1)*Math.cos(radLat2)*Math.pow(Math.sin(b/2),2)));
-        s = s * 6371004; // ???
+
+        // 地球半径
+        s = s * 6371004;
         s = Math.round(s * 10000) / 10000;
         return s;
     }

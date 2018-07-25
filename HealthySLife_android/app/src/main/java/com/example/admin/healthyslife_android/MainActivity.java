@@ -21,25 +21,10 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.SDKInitializer;
-import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
-import com.baidu.mapapi.map.DotOptions;
-import com.baidu.mapapi.map.MapStatusUpdate;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MyLocationData;
-import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.map.PolylineOptions;
-import com.baidu.mapapi.model.LatLng;
 import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
 import com.example.admin.healthyslife_android.fragment.MapFragment;
-import com.example.admin.healthyslife_android.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             mapFragment.updateTimeText(mTotalTime);
             if (mTotalTime != 0) {
                 mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / mTotalTime);
-                double velocity = MapFragment.mTotalDistance * 1000 / mTotalTime;
+                double velocity = mapFragment.getTotalDistance() * 1000 / mTotalTime;
                 float calorie = calorieCalculator(getWeight(), mTotalTime / 1000, (float) velocity);
                 mapFragment.updateSpeedText(velocity);
                 HealthyFragment healthyFragment = getHealthyFragment();
