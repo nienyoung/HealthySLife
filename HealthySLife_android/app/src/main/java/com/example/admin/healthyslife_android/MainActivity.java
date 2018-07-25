@@ -44,6 +44,8 @@ import com.example.admin.healthyslife_android.settings.SettingsActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.admin.healthyslife_android.utils.HealthyUils.calorieCalculator;
+
 /**
  * @author wu jingji
  */
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Max batch latency is specified in microseconds
      */
-    private int mMaxDelay = 2000000;
+    private int mMaxDelay = 0;
     /**
      * Steps counter
      */
@@ -84,25 +86,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private int mCounterSteps = 0;
     /**
-     * Start exercise time
-     */
-    private long mStartTime = 0;
-    /**
-     * Runner's velocity in X-axis
-     */
-    private double mVelX = 0;
-    /**
-     * Runner's velocity in Y-axis
-     */
-    private double mVelY = 0;
-    /**
-     * Runner's velocity in Z-axis
-     */
-    private double mVelZ = 0;
-    /**
-     * Timestamp the latest event happened in microseconds
+     * Record last timer time
      */
     private long mLastTime = 0;
+    /**
+     * Total run time
+     */
+    private long mTotalTime = 0;
     /**
      * Total distance the user run
      */
@@ -112,31 +102,32 @@ public class MainActivity extends AppCompatActivity {
      * permanent data
      */
     private SharedPreferences settings;
-    private String nowHeight;
-    private String nowWeight;
-
-
 
     private Handler mTimerHandler = new Handler();
     private Runnable mTimerRunnable = new Runnable() {
 
         @Override
         public void run() {
-            long millis = System.currentTimeMillis() - mStartTime;
+            long currentTime = System.currentTimeMillis();
+            mTotalTime += currentTime - mLastTime;
+            mLastTime = currentTime;
 
             // update time text view
             MapFragment mapFragment = getMapFragment();
             if (mapFragment == null) {
                 return;
             }
-            mapFragment.updateTimeText(millis);
-            if (millis != 0) {
-                mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
-                mapFragment.updateSpeedText(MapFragment.mTotalDistance * 1000 / millis);
+            mapFragment.updateTimeText(mTotalTime);
+            if (mTotalTime != 0) {
+                mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / mTotalTime);
+                double velocity = MapFragment.mTotalDistance * 1000 / mTotalTime;
+                float calorie = calorieCalculator(getWeight(), mTotalTime / 1000, (float) velocity);
+                mapFragment.updateSpeedText(velocity);
                 HealthyFragment healthyFragment = getHealthyFragment();
                 if (healthyFragment != null) {
-                    healthyFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
-                    healthyFragment.updateSpeedText(MapFragment.mTotalDistance * 1000 / millis);
+                    healthyFragment.updateStepFrequencyText((double) (mSteps * 60000) / mTotalTime);
+                    healthyFragment.updateSpeedText(velocity);
+                    healthyFragment.updateCalorie(calorie);
                 }
             }
 
@@ -150,10 +141,8 @@ public class MainActivity extends AppCompatActivity {
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
 
-
         mViewPager = findViewById(R.id.main_viewPager);
         mBottomNavigationView = findViewById(R.id.bottomNavigation);
-
 
         MapFragment mapFragment = MapFragment.newInstance(onExerciseStateChangeListener);
         HealthyFragment healthyFragment = HealthyFragment.newInstance();
@@ -169,8 +158,6 @@ public class MainActivity extends AppCompatActivity {
 
         //get height and weight from settings
         settings = this.getSharedPreferences("mySettings", MODE_PRIVATE);
-        nowHeight = settings.getString("pref_key_user_height", "0");
-        nowWeight = settings.getString("pref_key_user_weight", "0");
     }
 
     @Override
@@ -208,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt(BUNDLE_STATE, mState);
         outState.putInt(BUNDLE_LATENCY, mMaxDelay);
         outState.putInt(BUNDLE_STEPS, mSteps);
-        outState.putLong(BUNDLE_TIME, mStartTime);
+        outState.putLong(BUNDLE_TIME, mTotalTime);
     }
 
     @Override
@@ -219,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
             mSteps = savedInstanceState.getInt(BUNDLE_STEPS);
             mMaxDelay = savedInstanceState.getInt(BUNDLE_LATENCY);
             mState = savedInstanceState.getInt(BUNDLE_STATE);
-            mStartTime = savedInstanceState.getLong(BUNDLE_TIME);
+            mTotalTime = savedInstanceState.getLong(BUNDLE_TIME);
 
             if (mState == STATE_START) {
                 registerEventListener();
@@ -247,6 +234,14 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
         return healthyFragment;
+    }
+
+    private float getHeight() {
+        return Float.parseFloat(settings.getString("pref_key_user_height", "0"));
+    }
+
+    private float getWeight() {
+        return Float.parseFloat(settings.getString("pref_key_user_weight", "0"));
     }
 
     private void resetCounter() {
@@ -279,14 +274,6 @@ public class MainActivity extends AppCompatActivity {
                         mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0);
             }
         }
-
-        Sensor accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        if (accelerationSensor == null) {
-            Toast.makeText(getApplicationContext(), R.string.main_map_getAccelerationSensorFail, Toast.LENGTH_SHORT).show();
-        } else {
-            sensorManager.registerListener(
-                    mAccelerateListener, accelerationSensor, SensorManager.SENSOR_DELAY_GAME);
-        }
     }
 
     /**
@@ -299,9 +286,90 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         sensorManager.unregisterListener(mStepsListener);
-        sensorManager.unregisterListener(mAccelerateListener);
         Log.i(TAG, "Sensor listener unregistered.");
     }
+
+
+    private MapFragment.OnExerciseStateChangeListener onExerciseStateChangeListener = new MapFragment.OnExerciseStateChangeListener() {
+        @Override
+        public void onStart() {
+            mState = STATE_START;
+            mCounterSteps = 0;
+            mSteps = 0;
+            mLastTime = System.currentTimeMillis();
+            mTotalTime = 0;
+            mToTalDis = 0;
+            mTimerHandler.postDelayed(mTimerRunnable, 0);
+            registerEventListener();
+            MapFragment mapFragment = getMapFragment();
+            if (mapFragment != null) {
+                mapFragment.showHealthyInfo();
+            }
+        }
+
+        @Override
+        public void onPause() {
+            mState = STATE_PAUSE;
+            mTimerHandler.removeCallbacks(mTimerRunnable);
+        }
+
+        @Override
+        public void onContinue() {
+            mState = STATE_START;
+            mLastTime = System.currentTimeMillis();
+            mTimerHandler.postDelayed(mTimerRunnable, 0);
+        }
+
+        @Override
+        public void onStop() {
+            MapFragment mapFragment = getMapFragment();
+            if (mapFragment != null) {
+                mapFragment.hideHealthyInfo();
+            }
+            unregisterListeners();
+            mTimerHandler.removeCallbacks(mTimerRunnable);
+            mLastTime = 0;
+            mSteps = 0;
+            mState = STATE_STOP;
+        }
+    };
+
+    /**
+     * Listener that handles step sensor events for step detector and step counter sensors.
+     */
+    private final SensorEventListener mStepsListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+                if (mCounterSteps < 1) {
+                    // initial value
+                    mCounterSteps = (int) event.values[0];
+                }
+
+                // Calculate steps taken based on first counter value received.
+                if (mState == STATE_START) {
+                    mSteps += (int) event.values[0] - mCounterSteps;
+                }
+                mCounterSteps = (int) event.values[0];
+
+                // Update the text view with the latest step count
+                HealthyFragment healthyFragment = getHealthyFragment();
+                if (healthyFragment == null) {
+                    return;
+                }
+                healthyFragment.updateStepCounterText(mSteps);
+
+                MapFragment mapFragment = getMapFragment();
+                if (mapFragment == null) {
+                    return;
+                }
+                mapFragment.updateStepCounterText(mSteps);
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+    };
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -340,109 +408,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageScrollStateChanged(int state) {}
-    };
-
-    private MapFragment.OnExerciseStateChangeListener onExerciseStateChangeListener = new MapFragment.OnExerciseStateChangeListener() {
-        @Override
-        public void onStart() {
-            mState = STATE_START;
-            mSteps = 0;
-            mStartTime = System.currentTimeMillis();
-            mVelX = 0;
-            mVelY = 0;
-            mVelZ = 0;
-            mLastTime = 0;
-            mToTalDis = 0;
-            mTimerHandler.postDelayed(mTimerRunnable, 0);
-            registerEventListener();
-            MapFragment mapFragment = getMapFragment();
-            if (mapFragment != null) {
-                mapFragment.showHealthyInfo();
-            }
-        }
-
-        @Override
-        public void onStop() {
-            MapFragment mapFragment = getMapFragment();
-            if (mapFragment != null) {
-                mapFragment.hideHealthyInfo();
-            }
-            unregisterListeners();
-            mTimerHandler.removeCallbacks(mTimerRunnable);
-            mStartTime = 0;
-            mSteps = 0;
-            mState = STATE_STOP;
-        }
-    };
-
-    /**
-     * Listener that handles step sensor events for step detector and step counter sensors.
-     */
-    private final SensorEventListener mStepsListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-                if (mCounterSteps < 1) {
-                    // initial value
-                    mCounterSteps = (int) event.values[0];
-                }
-
-                // Calculate steps taken based on first counter value received.
-                mSteps = (int) event.values[0] - mCounterSteps;
-
-                // Update the text view with the latest step count
-                HealthyFragment healthyFragment = getHealthyFragment();
-                if (healthyFragment == null) {
-                    return;
-                }
-                healthyFragment.updateStepCounterText(mSteps);
-
-                MapFragment mapFragment = getMapFragment();
-                if (mapFragment == null) {
-                    return;
-                }
-                mapFragment.updateStepCounterText(mSteps);
-            }
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-    };
-
-    /**
-     * Listener that handles accelerometer events for accelerometer.
-     */
-    private final SensorEventListener mAccelerateListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-                final long t = event.timestamp / 1000;
-                if (mLastTime != 0) {
-                    final float dT = (float) (t - mLastTime) / 1000000.f;
-
-                    final float aX = event.values[0];
-                    final float aY = event.values[1];
-                    final float aZ = event.values[2];
-
-                    // s = vt + 1/2 * a * t^2
-                    double mDisX = mVelX * dT + aX * dT * dT / 2;
-                    double mDisY = mVelY * dT + aY * dT * dT / 2;
-                    double mDisZ = mVelZ * dT + aZ * dT * dT / 2;
-
-                    // v1 = v0 + a * t
-                    mVelX += aX * dT;
-                    mVelY += aY * dT;
-                    mVelZ += aZ * dT;
-
-                    // s = (sx^2 + sy^2 + sz^2)^0.5
-                    mToTalDis += Math.sqrt(mDisX * mDisX + mDisY * mDisY + mDisZ * mDisZ);
-                }
-                mLastTime = t;
-            }
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     };
 
     /**

@@ -15,6 +15,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +49,7 @@ import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.example.admin.healthyslife_android.MainActivity;
+
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.music.MusicActivity;
 import com.example.admin.healthyslife_android.settings.SettingsActivity;
@@ -62,10 +68,12 @@ public class MapFragment extends Fragment {
     public static final int STATE_STOP = 0;
     public static final int STATE_PAUSE = 1;
     public static final int STATE_START = 2;
+
     public static double mTotalDistance;
 
     private int mState;
     private Button mStartButton;
+    private Button mPauseButton;
     private Button mStopButton;
 
     private View mHealthyInfoView;
@@ -87,8 +95,7 @@ public class MapFragment extends Fragment {
         this.onExerciseStateChangeListener = onExerciseStateChangeListener;
     }
 
-    public MapFragment() {
-    }
+    public MapFragment() {}
 
     public static MapFragment newInstance(OnExerciseStateChangeListener onExerciseStateChangeListener) {
         MapFragment mapFragment = new MapFragment();
@@ -153,17 +160,34 @@ public class MapFragment extends Fragment {
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mState == STATE_START) {
+                if (mState == STATE_START || mState == STATE_PAUSE) {
                     mStartButton.setText(R.string.main_map_startExercise);
                     onExerciseStateChangeListener.onStop();
                     mState = STATE_STOP;
                     mStopButton.startAnimation(fadeOutAnim);
                     mStopButton.setVisibility(View.GONE);
+                    mPauseButton.startAnimation(fadeOutAnim);
+                    mPauseButton.setVisibility(View.GONE);
                     points.clear();
                     mTotalDistance=0;
                     mVelocity = 0;
                     mLastPoint = null;
-
+                }
+            }
+        });
+        mPauseButton = view.findViewById(R.id.btn_map_pauseRun);
+        mPauseButton.setVisibility(View.GONE);
+        mPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mState == STATE_START) {
+                    mPauseButton.setText(R.string.main_map_continueExercise);
+                    onExerciseStateChangeListener.onPause();
+                    mState = STATE_PAUSE;
+                } else if (mState == STATE_PAUSE) {
+                    mPauseButton.setText(R.string.main_map_pauseExercise);
+                    onExerciseStateChangeListener.onContinue();
+                    mState = STATE_START;
                 }
             }
         });
@@ -176,6 +200,8 @@ public class MapFragment extends Fragment {
                     mState = STATE_START;
                     button.setText(getTimeText(0));
                     onExerciseStateChangeListener.onStart();
+                    mPauseButton.setVisibility(View.VISIBLE);
+                    mPauseButton.startAnimation(fadeInAnim);
                     mStopButton.setVisibility(View.VISIBLE);
                     mStopButton.startAnimation(fadeInAnim);
                     points = new ArrayList<>();
@@ -183,7 +209,6 @@ public class MapFragment extends Fragment {
                     mVelocity = 0;
                     mLastPoint = null;
                 }
-
             }
         });
         view.findViewById(R.id.btn_map_music).setOnClickListener(new View.OnClickListener() {
@@ -235,7 +260,6 @@ public class MapFragment extends Fragment {
         mHealthyInfoView.setVisibility(View.GONE);
     }
 
-    @NonNull
     private String getTimeText(long time) {
         int seconds = (int) (time / 1000);
         int minutes = seconds / 60;
@@ -250,6 +274,16 @@ public class MapFragment extends Fragment {
          * It will be execute after user clicks the start button
          */
         void onStart();
+
+        /**
+         * It will be execute after user clicks the pause button
+         */
+        void onPause();
+
+        /**
+         * It will be execute after user clicks the pause button
+         */
+        void onContinue();
 
         /**
          * It will be execute after user clicks the stop button
@@ -316,8 +350,9 @@ public class MapFragment extends Fragment {
         {
             LatLng nEWpOINT = new LatLng(location.getLatitude(), location.getAltitude());
             double deltaDistance = 0;
-            if (mLastPoint != null)
+            if (mLastPoint != null) {
                 deltaDistance = getDistance(nEWpOINT, mLastPoint);
+            }
             mTotalDistance += deltaDistance;
             mLastPoint = nEWpOINT;
             mVelocity = deltaDistance;
