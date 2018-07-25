@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'releaseKey'
+            keyPassword 'qweasd'
+            storeFile file('C:/Users/cx132/StudioProjects/HealthySLife/HealthySLife_android/release.jks')
+            storePassword '123qwe'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.admin.healthyslife_android"
@@ -9,17 +17,24 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+        debug {
+            signingConfig signingConfigs.config
         }
     }
-    sourceSets{
-        main{
+    sourceSets {
+        main {
             jniLibs.srcDir 'libs'
         }
+    }
+    productFlavors {
     }
 }
 
