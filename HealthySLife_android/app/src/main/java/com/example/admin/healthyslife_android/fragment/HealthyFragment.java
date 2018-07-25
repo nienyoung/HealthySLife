@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.example.admin.healthyslife_android.R;
 
+import java.util.Locale;
+
 /**
  * @author wu jingji
  */
@@ -23,6 +25,7 @@ public class HealthyFragment extends Fragment {
     private TextView mStepsTextView;
     private TextView mStepFrequencyTextView;
     private TextView mSpeedTextView;
+    private TextView mCalorieTextView;
 
     public HealthyFragment() {}
 
@@ -48,7 +51,7 @@ public class HealthyFragment extends Fragment {
         if (fm == null) {
             Log.i(TAG, "onCreateView: cannot get fragment manager");
         } else {
-            fm.beginTransaction().add(R.id.healthy_heartRateContainer, HeartRateMonitorFragment.newInstance()).commit();
+            fm.beginTransaction().add(R.id.healthy_heartRateContainer, HeartRateMonitorFragment.newInstance()).commitAllowingStateLoss();
         }
         return inflate;
     }
@@ -59,6 +62,7 @@ public class HealthyFragment extends Fragment {
         mStepsTextView = view.findViewById(R.id.tv_healthy_stepCounter);
         mStepFrequencyTextView = view.findViewById(R.id.tv_healthy_stepFrequency);
         mSpeedTextView = view.findViewById(R.id.tv_healthy_speed);
+        mCalorieTextView = view.findViewById(R.id.tv_healthy_calorie_data);
     }
 
     public void updateStepCounterText(int steps) {
@@ -71,5 +75,9 @@ public class HealthyFragment extends Fragment {
 
     public void updateSpeedText(double speed) {
         mSpeedTextView.setText(getString(R.string.main_healthy_avgSpeedFormat, speed));
+    }
+
+    public void updateCalorie(float calorie) {
+        mCalorieTextView.setText(String.format(Locale.CHINA, "%.2f", calorie));
     }
 }

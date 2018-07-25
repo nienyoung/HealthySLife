@@ -24,10 +24,11 @@ import android.widget.Toast;
 import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
 import com.example.admin.healthyslife_android.fragment.MapFragment;
-import com.example.admin.healthyslife_android.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.admin.healthyslife_android.utils.HealthyUils.calorieCalculator;
 
 /**
  * @author wu jingji
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Max batch latency is specified in microseconds
      */
-    private int mMaxDelay = 2000000;
+    private int mMaxDelay = 0;
     /**
      * Steps counter
      */
@@ -69,9 +70,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private int mCounterSteps = 0;
     /**
-     * Start exercise time
+     * Record last timer time
      */
-    private long mStartTime = 0;
+    private long mLastTime = 0;
+    /**
+     * Total run time
+     */
+    private long mTotalTime = 0;
     /**
      * Runner's velocity in X-axis
      */
@@ -87,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Timestamp the latest event happened in microseconds
      */
-    private long mLastTime = 0;
+    private long mLastEventTime = 0;
     /**
      * Total distance the user run
      */
@@ -97,29 +102,32 @@ public class MainActivity extends AppCompatActivity {
      * permanent data
      */
     private SharedPreferences settings;
-    private String nowHeight;
-    private String nowWeight;
 
     private Handler mTimerHandler = new Handler();
     private Runnable mTimerRunnable = new Runnable() {
 
         @Override
         public void run() {
-            long millis = System.currentTimeMillis() - mStartTime;
+            long currentTime = System.currentTimeMillis();
+            mTotalTime += currentTime - mLastTime;
+            mLastTime = currentTime;
 
             // update time text view
             MapFragment mapFragment = getMapFragment();
             if (mapFragment == null) {
                 return;
             }
-            mapFragment.updateTimeText(millis);
-            if (millis != 0) {
-                mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
-                mapFragment.updateSpeedText(mToTalDis * 1000 / millis);
+            mapFragment.updateTimeText(mTotalTime);
+            if (mTotalTime != 0) {
+                mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / mTotalTime);
+                double velocity = mToTalDis * 1000 / mTotalTime;
+                float calorie = calorieCalculator(getWeight(), mTotalTime / 1000, (float) velocity);
+                mapFragment.updateSpeedText(velocity);
                 HealthyFragment healthyFragment = getHealthyFragment();
                 if (healthyFragment != null) {
-                    healthyFragment.updateStepFrequencyText((double) (mSteps * 60000) / millis);
-                    healthyFragment.updateSpeedText(mToTalDis * 1000 / millis);
+                    healthyFragment.updateStepFrequencyText((double) (mSteps * 60000) / mTotalTime);
+                    healthyFragment.updateSpeedText(velocity);
+                    healthyFragment.updateCalorie(calorie);
                 }
             }
 
@@ -150,8 +158,6 @@ public class MainActivity extends AppCompatActivity {
 
         //get height and weight from settings
         settings = this.getSharedPreferences("mySettings", MODE_PRIVATE);
-        nowHeight = settings.getString("pref_key_user_height", "0");
-        nowWeight = settings.getString("pref_key_user_weight", "0");
     }
 
     @Override
@@ -189,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt(BUNDLE_STATE, mState);
         outState.putInt(BUNDLE_LATENCY, mMaxDelay);
         outState.putInt(BUNDLE_STEPS, mSteps);
-        outState.putLong(BUNDLE_TIME, mStartTime);
+        outState.putLong(BUNDLE_TIME, mTotalTime);
     }
 
     @Override
@@ -200,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
             mSteps = savedInstanceState.getInt(BUNDLE_STEPS);
             mMaxDelay = savedInstanceState.getInt(BUNDLE_LATENCY);
             mState = savedInstanceState.getInt(BUNDLE_STATE);
-            mStartTime = savedInstanceState.getLong(BUNDLE_TIME);
+            mTotalTime = savedInstanceState.getLong(BUNDLE_TIME);
 
             if (mState == STATE_START) {
                 registerEventListener();
@@ -228,6 +234,16 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
         return healthyFragment;
+    }
+
+    @NonNull
+    private float getHeight() {
+        return Float.parseFloat(settings.getString("pref_key_user_height", "0"));
+    }
+
+    @NonNull
+    private float getWeight() {
+        return Float.parseFloat(settings.getString("pref_key_user_weight", "0"));
     }
 
     private void resetCounter() {
@@ -327,12 +343,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onStart() {
             mState = STATE_START;
+            mCounterSteps = 0;
             mSteps = 0;
-            mStartTime = System.currentTimeMillis();
+            mLastTime = System.currentTimeMillis();
+            mTotalTime = 0;
             mVelX = 0;
             mVelY = 0;
             mVelZ = 0;
-            mLastTime = 0;
+            mLastEventTime = 0;
             mToTalDis = 0;
             mTimerHandler.postDelayed(mTimerRunnable, 0);
             registerEventListener();
@@ -343,6 +361,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onPause() {
+            mState = STATE_PAUSE;
+            mTimerHandler.removeCallbacks(mTimerRunnable);
+        }
+
+        @Override
+        public void onContinue() {
+            mState = STATE_START;
+            mLastTime = System.currentTimeMillis();
+            mVelX = 0;
+            mVelY = 0;
+            mVelZ = 0;
+            mLastEventTime = 0;
+            mTimerHandler.postDelayed(mTimerRunnable, 0);
+        }
+
+        @Override
         public void onStop() {
             MapFragment mapFragment = getMapFragment();
             if (mapFragment != null) {
@@ -350,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
             }
             unregisterListeners();
             mTimerHandler.removeCallbacks(mTimerRunnable);
-            mStartTime = 0;
+            mLastTime = 0;
             mSteps = 0;
             mState = STATE_STOP;
         }
@@ -369,7 +404,10 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // Calculate steps taken based on first counter value received.
-                mSteps = (int) event.values[0] - mCounterSteps;
+                if (mState == STATE_START) {
+                    mSteps += (int) event.values[0] - mCounterSteps;
+                }
+                mCounterSteps = (int) event.values[0];
 
                 // Update the text view with the latest step count
                 HealthyFragment healthyFragment = getHealthyFragment();
@@ -398,8 +436,8 @@ public class MainActivity extends AppCompatActivity {
         public void onSensorChanged(SensorEvent event) {
             if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
                 final long t = event.timestamp / 1000;
-                if (mLastTime != 0) {
-                    final float dT = (float) (t - mLastTime) / 1000000.f;
+                if (mLastEventTime != 0) {
+                    final float dT = (float) (t - mLastEventTime) / 1000000.f;
 
                     final float aX = event.values[0];
                     final float aY = event.values[1];
@@ -418,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
                     // s = (sx^2 + sy^2 + sz^2)^0.5
                     mToTalDis += Math.sqrt(mDisX * mDisX + mDisY * mDisY + mDisZ * mDisZ);
                 }
-                mLastTime = t;
+                mLastEventTime = t;
             }
         }
 

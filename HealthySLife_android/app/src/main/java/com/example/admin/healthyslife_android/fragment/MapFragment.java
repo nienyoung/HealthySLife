@@ -29,6 +29,7 @@ public class MapFragment extends Fragment {
 
     private int mState;
     private Button mStartButton;
+    private Button mPauseButton;
     private Button mStopButton;
 
     private View mHealthyInfoView;
@@ -68,12 +69,30 @@ public class MapFragment extends Fragment {
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mState == STATE_START) {
+                if (mState == STATE_START || mState == STATE_PAUSE) {
                     mStartButton.setText(R.string.main_map_startExercise);
                     onExerciseStateChangeListener.onStop();
                     mState = STATE_STOP;
                     mStopButton.startAnimation(fadeOutAnim);
                     mStopButton.setVisibility(View.GONE);
+                    mPauseButton.startAnimation(fadeOutAnim);
+                    mPauseButton.setVisibility(View.GONE);
+                }
+            }
+        });
+        mPauseButton = view.findViewById(R.id.btn_map_pauseRun);
+        mPauseButton.setVisibility(View.GONE);
+        mPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mState == STATE_START) {
+                    mPauseButton.setText(R.string.main_map_continueExercise);
+                    onExerciseStateChangeListener.onPause();
+                    mState = STATE_PAUSE;
+                } else if (mState == STATE_PAUSE) {
+                    mPauseButton.setText(R.string.main_map_pauseExercise);
+                    onExerciseStateChangeListener.onContinue();
+                    mState = STATE_START;
                 }
             }
         });
@@ -86,6 +105,8 @@ public class MapFragment extends Fragment {
                     mState = STATE_START;
                     button.setText(getTimeText(0));
                     onExerciseStateChangeListener.onStart();
+                    mPauseButton.setVisibility(View.VISIBLE);
+                    mPauseButton.startAnimation(fadeInAnim);
                     mStopButton.setVisibility(View.VISIBLE);
                     mStopButton.startAnimation(fadeInAnim);
                 }
@@ -154,6 +175,16 @@ public class MapFragment extends Fragment {
          * It will be execute after user clicks the start button
          */
         void onStart();
+
+        /**
+         * It will be execute after user clicks the pause button
+         */
+        void onPause();
+
+        /**
+         * It will be execute after user clicks the pause button
+         */
+        void onContinue();
 
         /**
          * It will be execute after user clicks the stop button
