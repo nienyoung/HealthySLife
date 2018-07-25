@@ -236,12 +236,10 @@ public class MainActivity extends AppCompatActivity {
         return healthyFragment;
     }
 
-    @NonNull
     private float getHeight() {
         return Float.parseFloat(settings.getString("pref_key_user_height", "0"));
     }
 
-    @NonNull
     private float getWeight() {
         return Float.parseFloat(settings.getString("pref_key_user_weight", "0"));
     }
