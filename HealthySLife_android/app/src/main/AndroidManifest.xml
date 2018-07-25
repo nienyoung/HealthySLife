@@ -27,7 +27,11 @@
             android:launchMode="singleInstance"></activity>
         <service android:name=".music.MusicService" android:exported="true"></service>
 
-    <activity android:name=".settings.SettingsActivity"
+        <activity android:name=".music.SelfMusicActivity"
+            android:launchMode="singleInstance"></activity>
+        <service android:name=".music.MusicService" android:exported="true"></service>
+
+        <activity android:name=".settings.SettingsActivity"
         android:launchMode="singleTask"></activity>
     <service android:name=".music.MusicService" android:exported="true"></service>
 </application>

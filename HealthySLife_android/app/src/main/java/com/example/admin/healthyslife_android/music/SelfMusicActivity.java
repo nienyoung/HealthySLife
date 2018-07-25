@@ -26,6 +26,7 @@ import android.widget.AdapterView;
 import com.example.admin.healthyslife_android.MainActivity;
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.adapter.MusicListAdapter;
+import com.example.admin.healthyslife_android.adapter.SelfMusicListAdapter;
 import com.example.admin.healthyslife_android.bean.Song;
 import com.example.admin.healthyslife_android.myWidget.MarqueTextView;
 import com.example.admin.healthyslife_android.utils.MusicUtils;
@@ -34,21 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MusicActivity extends Activity {
-
-    /*private List<Fragment> fragments;
-
-    private ViewPager musicViewPager;
-    //选项卡中的按钮
-    private Button defaultMusic;
-    private Button myMusic;
-    //作为指示标签的按钮
-    private ImageView cursor;
-    //标志指示标签的横坐标
-    private int cursorIndex = 0;
-    private int screenWidth;*/
-
-
+public class SelfMusicActivity extends Activity {
 
     private  ImageView isPlay;
     private  ImageView previous;
@@ -63,21 +50,18 @@ public class MusicActivity extends Activity {
 
     private ListView mListView;
     private List<Song> list;
-    private MusicListAdapter adapter;
+    private SelfMusicListAdapter adapter;
     private int currentSongIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_music);
+        setContentView(R.layout.activity_music_self);
 
         bindServiceConnection();
         musicService = new MusicService();
 
-        //initFragment();
         initView();
-        initListView();
-        setListener();
         currentSongIndex = 0;
 
         //设置列表循环播放
@@ -93,28 +77,7 @@ public class MusicActivity extends Activity {
 
     }
 
-    /*private void initFragment() {
-        fragments = new ArrayList<>();
-
-        Fragment defaultMusicFragmentFragment = new DefaultMusicFragment();
-        Fragment myMusicFragment = new MyMusicFragment();
-
-        fragments.add(defaultMusicFragmentFragment);
-        fragments.add(myMusicFragment);
-
-        MusicFragmentAdapter fragmentAdapter = new MusicFragmentAdapter(getSupportFragmentManager(), fragments);
-        musicViewPager.setAdapter(fragmentAdapter);
-    }*/
-
-
     private void initView(){
-
-        /*musicViewPager = (ViewPager)this.findViewById(R.id.music_view_pager);
-        defaultMusic = (Button)this.findViewById(R.id.btn_default_music);
-        myMusic = (Button)this.findViewById(R.id.btn_my_music);
-        cursor = (ImageView)this.findViewById(R.id.cursor_btn);
-        initIndicator(fragments.size());*/
-
 
         isPlay = (ImageView) findViewById(R.id.isPlayButton);
         previous = (ImageView) findViewById(R.id.previousButton);
@@ -129,62 +92,26 @@ public class MusicActivity extends Activity {
         playingSinger = (TextView) findViewById(R.id.playingSinger);
     }
 
-    private void initListView() {
+    private void updateListView() {
         mListView = (ListView) findViewById(R.id.main_listview);
         list = new ArrayList<>();
         //把扫描到的音乐赋值给list
-        list = MusicUtils.getMusicData(this);
-        adapter = new MusicListAdapter(this,list);
+        list = MusicListAdapter.selfList;
+        list.add(null);
+        list.add(null);
+        adapter = new SelfMusicListAdapter(this,list);
         mListView.setAdapter(adapter);
     }
 
     private void setListener(){
 
-        /*defaultMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                musicViewPager.setCurrentItem(0);
-            }
-        });
-
-        myMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                musicViewPager.setCurrentItem(1);
-            }
-        });
-
-        musicViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float offSet, int positionOffsetPixels) {
-                changeIndicator(position, offSet);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                cursorIndex = position;
-                switch (position) {
-                    case 0:
-                        selectedDefault();
-                        break;
-                    case 1:
-                       selectedMy();
-                        break;
-                }
-            }
-            @Override
-            public void onPageScrollStateChanged(int position) {
-            }
-        });*/
-
-
         isPlay.setOnClickListener(new myOnClickListener());
         previous.setOnClickListener(new myOnClickListener());
         next.setOnClickListener(new myOnClickListener());
-        findViewById(R.id.btn_my_music).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_default_music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MusicActivity.this, SelfMusicActivity.class);
+                Intent intent = new Intent(SelfMusicActivity.this, MusicActivity.class);
                 startActivity(intent);
                 //切换效果
                 overridePendingTransition(R.anim.leftin, R.anim.leftout);
@@ -194,40 +121,6 @@ public class MusicActivity extends Activity {
         mListView.setOnItemClickListener(listener);
     }
 
-    /*选中默认
-    private void selectedDefault() {
-        //设置标题的对应提示颜色
-        defaultMusic.setTextColor(getResources().getColor(R.color.color_font_white));
-        myMusic.setTextColor(getResources().getColor(R.color.color_healthyInfo_bg));
-    }
-
-    private void selectedMy() {
-        defaultMusic.setTextColor(getResources().getColor(R.color.color_healthyInfo_bg));
-        myMusic.setTextColor(getResources().getColor(R.color.color_font_white));
-    }
-
-    private void changeIndicator(int position, float offset) {
-        LinearLayout.LayoutParams lp =
-                (LinearLayout.LayoutParams) cursor.getLayoutParams();
-        if (cursorIndex == 0 && position == 0) {
-            lp.leftMargin = (int) (offset * (screenWidth * 1.0 / 2)
-                    + position * (screenWidth / 2));
-        } else if (cursorIndex == 1 && position == 0) {
-            lp.leftMargin = (int) (offset * (screenWidth * 1.0 / 2)
-                    + position * (screenWidth / 2));
-        }
-        cursor.setLayoutParams(lp);
-    }
-
-    private void initIndicator(int count) {
-        DisplayMetrics dpMetrics = new DisplayMetrics();
-        getWindow().getWindowManager().getDefaultDisplay().getMetrics(dpMetrics);
-        screenWidth = dpMetrics.widthPixels;
-        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) cursor.getLayoutParams();
-        lp.width = screenWidth / count;
-        cursor.setLayoutParams(lp);
-    }*/
-
 
     private class InnerItemOnCLickListener implements AdapterView.OnItemClickListener {
         @Override
@@ -236,7 +129,7 @@ public class MusicActivity extends Activity {
             currentSongIndex = position;
             if(currentSongIndex > list.size()-3){}
             else
-            play();
+                play();
         }
     }
 
@@ -261,12 +154,12 @@ public class MusicActivity extends Activity {
 
     private void previous() {
 
-            //当前音乐播放位置--（上一曲）
-            currentSongIndex--;
-            if (currentSongIndex < 0) {
-                currentSongIndex = list.size() - 3;
-            }
-                play();
+        //当前音乐播放位置--（上一曲）
+        currentSongIndex--;
+        if (currentSongIndex < 0) {
+            currentSongIndex = list.size() - 3;
+        }
+        play();
     }
 
     private void next() {
@@ -276,7 +169,7 @@ public class MusicActivity extends Activity {
         if (currentSongIndex > list.size()-3) {
             currentSongIndex = 0;
         }
-            play();
+        play();
     }
 
 
@@ -301,7 +194,7 @@ public class MusicActivity extends Activity {
             musicService.playNewSong(cur.path);
             seekBar.setMax(musicService.mediaPlayer.getDuration());
 
-            cur.thumBitmap = MusicUtils.getArtwork(MusicActivity.this,cur.songId,cur.albumId,false,true);
+            cur.thumBitmap = MusicUtils.getArtwork(SelfMusicActivity.this,cur.songId,cur.albumId,false,true);
             if(cur.thumBitmap!=null)
                 albumImage.setImageBitmap(cur.thumBitmap);
 
@@ -368,14 +261,17 @@ public class MusicActivity extends Activity {
     /*
     返回键跳转*/
     public void onBackPressed() {
-        Intent intent = new Intent(MusicActivity.this,MainActivity.class);
+        Intent intent = new Intent(SelfMusicActivity.this,MainActivity.class);
         startActivity(intent);
         //super.onBackPressed();
+
         overridePendingTransition(R.anim.leftin, R.anim.leftout);
     }
 
     @Override
     public void onPause(){
+        list.remove(list.size()-1);
+        list.remove(list.size()-1);
         super.onPause();
         if(isApplicationBroughtToBackground()) {
             musicService.isReturnTo = 1;
@@ -394,11 +290,14 @@ public class MusicActivity extends Activity {
 
         verifyStoragePermissions(this);
 
-            seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
-            seekBar.setMax(musicService.mediaPlayer.getDuration());
-            handler.post(runnable);
+        updateListView();
+        setListener();
 
-            if(!MusicService.mediaPlayer.isPlaying()){
+        seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
+        seekBar.setMax(musicService.mediaPlayer.getDuration());
+        handler.post(runnable);
+
+        if(!MusicService.mediaPlayer.isPlaying()) {
             //默认播放第一首
             MusicService.mediaPlayer.reset();
             if (list.get(0) != null) {
@@ -408,19 +307,19 @@ public class MusicActivity extends Activity {
                 seekBar.setMax(musicService.mediaPlayer.getDuration());
                 playingSong.setText(list.get(currentSongIndex).song);
                 playingSinger.setText(list.get(currentSongIndex).singer);
-                list.get(currentSongIndex).thumBitmap = MusicUtils.getArtwork(MusicActivity.this, list.get(currentSongIndex).songId, list.get(currentSongIndex).albumId, false, false);
+                list.get(currentSongIndex).thumBitmap = MusicUtils.getArtwork(SelfMusicActivity.this, list.get(currentSongIndex).songId, list.get(currentSongIndex).albumId, false, false);
                 if (list.get(currentSongIndex).thumBitmap != null)
                     albumImage.setImageBitmap(list.get(currentSongIndex).thumBitmap);
             }
         }else{
-                    if (!playingSong.getText().equals(SelfMusicActivity.playingSong.getText())) {
-                        playingSong.setText(SelfMusicActivity.playingSong.getText());
-                        albumImage.setImageDrawable(getResources().getDrawable(R.drawable.custom));
-                    }
-                    if (!playingSinger.getText().equals(SelfMusicActivity.playingSinger.getText())) {
-                        playingSinger.setText(SelfMusicActivity.playingSinger.getText());
-                    }
-            }
+                if (!playingSong.getText().equals(MusicActivity.playingSong.getText())) {
+                    playingSong.setText(MusicActivity.playingSong.getText());
+                    albumImage.setImageDrawable(getResources().getDrawable(R.drawable.defult));
+                }
+                if (!playingSinger.getText().equals(MusicActivity.playingSinger.getText())) {
+                    playingSinger.setText(MusicActivity.playingSinger.getText());
+                }
+        }
         super.onResume();
         Log.d("hint", "handler post runnable");
     }

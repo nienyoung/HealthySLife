@@ -21,7 +21,7 @@
             android:background="@color/color_healthyInfo_bg"
             android:padding="-5dp"
             android:textSize="15dp"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/color_healthyTips_font"
             android:text="默认列表" />
         <Button
             android:id="@+id/btn_my_music"
@@ -30,7 +30,7 @@
             android:layout_weight="1"
             android:background="@color/color_healthyInfo_bg"
             android:textSize="15dp"
-            android:textColor="@color/color_healthyTips_font"
+            android:textColor="@color/colorPrimary"
             android:text="自定义列表"/>
     </LinearLayout>
 
@@ -39,15 +39,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/top_linear"/>
-
-    <!--android.support.v4.view.ViewPager
-        android:id="@+id/music_view_pager"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="12"
-        android:layout_below="@id/top_add">
-    </android.support.v4.view.ViewPager-->
-
 
     <RelativeLayout
         android:layout_width="fill_parent"

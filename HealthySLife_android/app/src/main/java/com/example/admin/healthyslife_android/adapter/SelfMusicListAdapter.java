@@ -9,22 +9,20 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.admin.healthyslife_android.fragment.HeartRateMonitorFragment;
-import com.example.admin.healthyslife_android.music.MusicActivity;
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.bean.Song;
+import com.example.admin.healthyslife_android.music.SelfMusicActivity;
 import com.example.admin.healthyslife_android.utils.MusicUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MusicListAdapter extends BaseAdapter {
+public class SelfMusicListAdapter extends BaseAdapter {
     private Context context;
     private List<Song> list;
-    public static List<Song> selfList = new ArrayList<>();
-    public MusicListAdapter(MusicActivity musicActivity, List<Song> list) {
+    public SelfMusicListAdapter(SelfMusicActivity musicActivity, List<Song> list) {
         this.context = musicActivity;
         this.list = list;
+
     }
 
     @Override
@@ -48,26 +46,23 @@ public class MusicListAdapter extends BaseAdapter {
         if (view == null) {
             holder = new ViewHolder();
             //引入布局
-            view = View.inflate(context, R.layout.item_music_listview, null);
+            view = View.inflate(context, R.layout.item_music_self_listview, null);
             //实例化对象
-            holder.song = (TextView) view.findViewById(R.id.item_mymusic_song);
-            holder.singer = (TextView) view.findViewById(R.id.item_mymusic_singer);
-            holder.duration = (TextView) view.findViewById(R.id.item_mymusic_duration);
-            holder.position = (TextView) view.findViewById(R.id.item_mymusic_postion);
-            holder.plus = (ImageView)view.findViewById(R.id.plusImage);
+            holder.song = (TextView) view.findViewById(R.id.item_mymusic_song1);
+            holder.singer = (TextView) view.findViewById(R.id.item_mymusic_singer1);
+            holder.duration = (TextView) view.findViewById(R.id.item_mymusic_duration1);
+            holder.position = (TextView) view.findViewById(R.id.item_mymusic_postion1);
+            holder.minus = (ImageView)view.findViewById(R.id.minusImage);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
         }
 
-        holder.plus.setOnClickListener(new View.OnClickListener() {
+        holder.minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selfList.add(list.get(i));
-                AlertDialog.Builder builder  = new AlertDialog.Builder(context);
-                builder.setMessage("歌曲已添加至自定义列表。" ) ;
-                builder.setPositiveButton("确认" ,  null );
-                builder.show();
+                list.remove(i);
+                notifyDataSetChanged();
             }
         });
 
@@ -77,14 +72,14 @@ public class MusicListAdapter extends BaseAdapter {
                 holder.song.setText(null);
             }else{
                 if(list.size()==2)
-                holder.song.setText("当前手机中暂无音乐,无法进行播放。");
+                    holder.song.setText("当前自定义列表暂无音乐,请前往默认列表进行添加。");
                 else
                     holder.song.setText(null);
             }
             holder.singer.setText(null);
             holder.duration.setText(null);
             holder.position.setText(null);
-            holder.plus.setImageBitmap(null);
+            holder.minus.setImageBitmap(null);
 
         }else {
             //给控件赋值
@@ -104,7 +99,7 @@ public class MusicListAdapter extends BaseAdapter {
         TextView singer;//歌手
         TextView duration;//时长
         TextView position;//序号
-        ImageView plus;
+        ImageView minus;
     }
 
 }
