@@ -3,10 +3,9 @@ package com.example.admin.healthyslife_android.music;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -27,6 +26,7 @@ import com.example.admin.healthyslife_android.MainActivity;
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.adapter.MusicListAdapter;
 import com.example.admin.healthyslife_android.bean.Song;
+import com.example.admin.healthyslife_android.fragment.HeartRateMonitorFragment;
 import com.example.admin.healthyslife_android.myWidget.MarqueTextView;
 import com.example.admin.healthyslife_android.utils.MusicUtils;
 
@@ -35,20 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MusicActivity extends Activity {
-
-    /*private List<Fragment> fragments;
-
-    private ViewPager musicViewPager;
-    //选项卡中的按钮
-    private Button defaultMusic;
-    private Button myMusic;
-    //作为指示标签的按钮
-    private ImageView cursor;
-    //标志指示标签的横坐标
-    private int cursorIndex = 0;
-    private int screenWidth;*/
-
-
 
     private  ImageView isPlay;
     private  ImageView previous;
@@ -74,7 +60,6 @@ public class MusicActivity extends Activity {
         bindServiceConnection();
         musicService = new MusicService();
 
-        //initFragment();
         initView();
         initListView();
         setListener();
@@ -93,28 +78,8 @@ public class MusicActivity extends Activity {
 
     }
 
-    /*private void initFragment() {
-        fragments = new ArrayList<>();
-
-        Fragment defaultMusicFragmentFragment = new DefaultMusicFragment();
-        Fragment myMusicFragment = new MyMusicFragment();
-
-        fragments.add(defaultMusicFragmentFragment);
-        fragments.add(myMusicFragment);
-
-        MusicFragmentAdapter fragmentAdapter = new MusicFragmentAdapter(getSupportFragmentManager(), fragments);
-        musicViewPager.setAdapter(fragmentAdapter);
-    }*/
-
 
     private void initView(){
-
-        /*musicViewPager = (ViewPager)this.findViewById(R.id.music_view_pager);
-        defaultMusic = (Button)this.findViewById(R.id.btn_default_music);
-        myMusic = (Button)this.findViewById(R.id.btn_my_music);
-        cursor = (ImageView)this.findViewById(R.id.cursor_btn);
-        initIndicator(fragments.size());*/
-
 
         isPlay = (ImageView) findViewById(R.id.isPlayButton);
         previous = (ImageView) findViewById(R.id.previousButton);
@@ -140,44 +105,6 @@ public class MusicActivity extends Activity {
 
     private void setListener(){
 
-        /*defaultMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                musicViewPager.setCurrentItem(0);
-            }
-        });
-
-        myMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                musicViewPager.setCurrentItem(1);
-            }
-        });
-
-        musicViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float offSet, int positionOffsetPixels) {
-                changeIndicator(position, offSet);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                cursorIndex = position;
-                switch (position) {
-                    case 0:
-                        selectedDefault();
-                        break;
-                    case 1:
-                       selectedMy();
-                        break;
-                }
-            }
-            @Override
-            public void onPageScrollStateChanged(int position) {
-            }
-        });*/
-
-
         isPlay.setOnClickListener(new myOnClickListener());
         previous.setOnClickListener(new myOnClickListener());
         next.setOnClickListener(new myOnClickListener());
@@ -190,43 +117,14 @@ public class MusicActivity extends Activity {
                 overridePendingTransition(R.anim.leftin, R.anim.leftout);
             }
         });
+        findViewById(R.id.music_bottom).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
         InnerItemOnCLickListener listener = new InnerItemOnCLickListener();
         mListView.setOnItemClickListener(listener);
     }
-
-    /*选中默认
-    private void selectedDefault() {
-        //设置标题的对应提示颜色
-        defaultMusic.setTextColor(getResources().getColor(R.color.color_font_white));
-        myMusic.setTextColor(getResources().getColor(R.color.color_healthyInfo_bg));
-    }
-
-    private void selectedMy() {
-        defaultMusic.setTextColor(getResources().getColor(R.color.color_healthyInfo_bg));
-        myMusic.setTextColor(getResources().getColor(R.color.color_font_white));
-    }
-
-    private void changeIndicator(int position, float offset) {
-        LinearLayout.LayoutParams lp =
-                (LinearLayout.LayoutParams) cursor.getLayoutParams();
-        if (cursorIndex == 0 && position == 0) {
-            lp.leftMargin = (int) (offset * (screenWidth * 1.0 / 2)
-                    + position * (screenWidth / 2));
-        } else if (cursorIndex == 1 && position == 0) {
-            lp.leftMargin = (int) (offset * (screenWidth * 1.0 / 2)
-                    + position * (screenWidth / 2));
-        }
-        cursor.setLayoutParams(lp);
-    }
-
-    private void initIndicator(int count) {
-        DisplayMetrics dpMetrics = new DisplayMetrics();
-        getWindow().getWindowManager().getDefaultDisplay().getMetrics(dpMetrics);
-        screenWidth = dpMetrics.widthPixels;
-        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) cursor.getLayoutParams();
-        lp.width = screenWidth / count;
-        cursor.setLayoutParams(lp);
-    }*/
 
 
     private class InnerItemOnCLickListener implements AdapterView.OnItemClickListener {
@@ -397,6 +295,12 @@ public class MusicActivity extends Activity {
             seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
             seekBar.setMax(musicService.mediaPlayer.getDuration());
             handler.post(runnable);
+            if(list.get(0)==null){
+                playingTime.setText("00:00");
+                totalTime.setText("00:00");
+                seekBar.setProgress(0);
+                seekBar.setMax(0);
+            }
 
             if(!MusicService.mediaPlayer.isPlaying()){
             //默认播放第一首
@@ -413,13 +317,13 @@ public class MusicActivity extends Activity {
                     albumImage.setImageBitmap(list.get(currentSongIndex).thumBitmap);
             }
         }else{
-                    if (!playingSong.getText().equals(SelfMusicActivity.playingSong.getText())) {
+                if (list.get(0) != null) {
+                    if (!list.get(currentSongIndex).path.equals(MusicService.curPath)) {
                         playingSong.setText(SelfMusicActivity.playingSong.getText());
                         albumImage.setImageDrawable(getResources().getDrawable(R.drawable.custom));
-                    }
-                    if (!playingSinger.getText().equals(SelfMusicActivity.playingSinger.getText())) {
                         playingSinger.setText(SelfMusicActivity.playingSinger.getText());
                     }
+                }
             }
         super.onResume();
         Log.d("hint", "handler post runnable");
@@ -467,13 +371,23 @@ public class MusicActivity extends Activity {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
+        if (permission == PackageManager.PERMISSION_GRANTED){
+            return;
+        }else {
             // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     activity,
                     PERMISSIONS_STORAGE,
                     REQUEST_EXTERNAL_STORAGE
             );
+
+            permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (permission != PackageManager.PERMISSION_GRANTED){
+                AlertDialog.Builder builder  = new AlertDialog.Builder(activity);
+                builder.setMessage("禁止后无法播放音乐。" ) ;
+                builder.setPositiveButton("确认" ,  null );
+                builder.show();
+            }
         }
     }
 

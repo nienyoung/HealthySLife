@@ -18,6 +18,7 @@ public class MusicService extends Service {
         }
     }
 
+    public static String curPath;
     public static int isReturnTo = 0;
     public static MediaPlayer mediaPlayer = new MediaPlayer();
     public MusicService() {
@@ -28,6 +29,7 @@ public class MusicService extends Service {
         try {
             mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
+            curPath = path;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,6 +40,7 @@ public class MusicService extends Service {
             mediaPlayer.setDataSource(file_path);
             mediaPlayer.prepare();
             mediaPlayer.start();
+            curPath = file_path;
         } catch (Exception e) {
             e.printStackTrace();
         }

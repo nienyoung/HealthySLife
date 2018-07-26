@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.bean.Song;
+import com.example.admin.healthyslife_android.music.MusicService;
 import com.example.admin.healthyslife_android.music.SelfMusicActivity;
 import com.example.admin.healthyslife_android.utils.MusicUtils;
 
@@ -72,7 +73,7 @@ public class SelfMusicListAdapter extends BaseAdapter {
                 holder.song.setText(null);
             }else{
                 if(list.size()==2)
-                    holder.song.setText("当前自定义列表暂无音乐,请前往默认列表进行添加。");
+                    holder.song.setText("暂无音乐,请前往默认列表进行添加。");
                 else
                     holder.song.setText(null);
             }

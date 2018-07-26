@@ -40,16 +40,9 @@
         android:layout_height="match_parent"
         android:layout_below="@id/top_linear"/>
 
-    <!--android.support.v4.view.ViewPager
-        android:id="@+id/music_view_pager"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="12"
-        android:layout_below="@id/top_add">
-    </android.support.v4.view.ViewPager-->
-
 
     <RelativeLayout
+        android:id="@+id/music_bottom"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

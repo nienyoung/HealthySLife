@@ -117,6 +117,11 @@ public class SelfMusicActivity extends Activity {
                 overridePendingTransition(R.anim.leftin, R.anim.leftout);
             }
         });
+        findViewById(R.id.music_bottom).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
         InnerItemOnCLickListener listener = new InnerItemOnCLickListener();
         mListView.setOnItemClickListener(listener);
     }
@@ -296,6 +301,12 @@ public class SelfMusicActivity extends Activity {
         seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
         seekBar.setMax(musicService.mediaPlayer.getDuration());
         handler.post(runnable);
+        if(list.get(0)==null){
+            playingTime.setText("00:00");
+            totalTime.setText("00:00");
+            seekBar.setProgress(0);
+            seekBar.setMax(0);
+        }
 
         if(!MusicService.mediaPlayer.isPlaying()) {
             //默认播放第一首
@@ -312,13 +323,18 @@ public class SelfMusicActivity extends Activity {
                     albumImage.setImageBitmap(list.get(currentSongIndex).thumBitmap);
             }
         }else{
-                if (!playingSong.getText().equals(MusicActivity.playingSong.getText())) {
+            if (list.get(0) != null) {
+                if (!list.get(currentSongIndex).path.equals(MusicService.curPath)) {
                     playingSong.setText(MusicActivity.playingSong.getText());
                     albumImage.setImageDrawable(getResources().getDrawable(R.drawable.defult));
-                }
-                if (!playingSinger.getText().equals(MusicActivity.playingSinger.getText())) {
                     playingSinger.setText(MusicActivity.playingSinger.getText());
                 }
+            }
+            else {
+                playingSong.setText(MusicActivity.playingSong.getText());
+                albumImage.setImageDrawable(getResources().getDrawable(R.drawable.defult));
+                playingSinger.setText(MusicActivity.playingSinger.getText());
+            }
         }
         super.onResume();
         Log.d("hint", "handler post runnable");
