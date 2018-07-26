@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.example.admin.healthyslife_android.adapter.MainViewPagerAdapter;
 import com.example.admin.healthyslife_android.fragment.HealthyFragment;
 import com.example.admin.healthyslife_android.fragment.MapFragment;
@@ -78,22 +79,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private long mTotalTime = 0;
     /**
-     * Runner's velocity in X-axis
-     */
-    private double mVelX = 0;
-    /**
-     * Runner's velocity in Y-axis
-     */
-    private double mVelY = 0;
-    /**
-     * Runner's velocity in Z-axis
-     */
-    private double mVelZ = 0;
-    /**
-     * Timestamp the latest event happened in microseconds
-     */
-    private long mLastEventTime = 0;
-    /**
      * Total distance the user run
      */
     private double mToTalDis = 0;
@@ -120,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             mapFragment.updateTimeText(mTotalTime);
             if (mTotalTime != 0) {
                 mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / mTotalTime);
-                double velocity = mToTalDis * 1000 / mTotalTime;
+                double velocity = mapFragment.getTotalDistance() * 1000 / mTotalTime;
                 float calorie = calorieCalculator(getWeight(), mTotalTime / 1000, (float) velocity);
                 mapFragment.updateSpeedText(velocity);
                 HealthyFragment healthyFragment = getHealthyFragment();
@@ -138,11 +123,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
 
         mViewPager = findViewById(R.id.main_viewPager);
         mBottomNavigationView = findViewById(R.id.bottomNavigation);
-
 
         MapFragment mapFragment = MapFragment.newInstance(onExerciseStateChangeListener);
         HealthyFragment healthyFragment = HealthyFragment.newInstance();
@@ -236,12 +221,10 @@ public class MainActivity extends AppCompatActivity {
         return healthyFragment;
     }
 
-    @NonNull
     private float getHeight() {
         return Float.parseFloat(settings.getString("pref_key_user_height", "0"));
     }
 
-    @NonNull
     private float getWeight() {
         return Float.parseFloat(settings.getString("pref_key_user_weight", "0"));
     }
@@ -276,14 +259,6 @@ public class MainActivity extends AppCompatActivity {
                         mStepsListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0);
             }
         }
-
-        Sensor accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        if (accelerationSensor == null) {
-            Toast.makeText(getApplicationContext(), R.string.main_map_getAccelerationSensorFail, Toast.LENGTH_SHORT).show();
-        } else {
-            sensorManager.registerListener(
-                    mAccelerateListener, accelerationSensor, SensorManager.SENSOR_DELAY_GAME);
-        }
     }
 
     /**
@@ -296,48 +271,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         sensorManager.unregisterListener(mStepsListener);
-        sensorManager.unregisterListener(mAccelerateListener);
         Log.i(TAG, "Sensor listener unregistered.");
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_exercise:
-                    mViewPager.setCurrentItem(MAP_FRAGMENT_POSITION, false);
-                    return true;
-                case R.id.navigation_healthy:
-                    mViewPager.setCurrentItem(HEALTHY_FRAGMENT_POSITION, false);
-                    return true;
-                default:
-                    return false;
-            }
-        }
-    };
-
-    private ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-
-        @Override
-        public void onPageSelected(int position) {
-            switch (position) {
-                case MAP_FRAGMENT_POSITION:
-                    mBottomNavigationView.setSelectedItemId(R.id.navigation_exercise);
-                    break;
-                case HEALTHY_FRAGMENT_POSITION:
-                    mBottomNavigationView.setSelectedItemId(R.id.navigation_healthy);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {}
-    };
 
     private MapFragment.OnExerciseStateChangeListener onExerciseStateChangeListener = new MapFragment.OnExerciseStateChangeListener() {
         @Override
@@ -347,10 +283,6 @@ public class MainActivity extends AppCompatActivity {
             mSteps = 0;
             mLastTime = System.currentTimeMillis();
             mTotalTime = 0;
-            mVelX = 0;
-            mVelY = 0;
-            mVelZ = 0;
-            mLastEventTime = 0;
             mToTalDis = 0;
             mTimerHandler.postDelayed(mTimerRunnable, 0);
             registerEventListener();
@@ -370,10 +302,6 @@ public class MainActivity extends AppCompatActivity {
         public void onContinue() {
             mState = STATE_START;
             mLastTime = System.currentTimeMillis();
-            mVelX = 0;
-            mVelY = 0;
-            mVelZ = 0;
-            mLastEventTime = 0;
             mTimerHandler.postDelayed(mTimerRunnable, 0);
         }
 
@@ -428,40 +356,43 @@ public class MainActivity extends AppCompatActivity {
         public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     };
 
-    /**
-     * Listener that handles accelerometer events for accelerometer.
-     */
-    private final SensorEventListener mAccelerateListener = new SensorEventListener() {
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
-        public void onSensorChanged(SensorEvent event) {
-            if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-                final long t = event.timestamp / 1000;
-                if (mLastEventTime != 0) {
-                    final float dT = (float) (t - mLastEventTime) / 1000000.f;
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_exercise:
+                    mViewPager.setCurrentItem(MAP_FRAGMENT_POSITION, false);
+                    return true;
+                case R.id.navigation_healthy:
+                    mViewPager.setCurrentItem(HEALTHY_FRAGMENT_POSITION, false);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    };
 
-                    final float aX = event.values[0];
-                    final float aY = event.values[1];
-                    final float aZ = event.values[2];
+    private ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
-                    // s = vt + 1/2 * a * t^2
-                    double mDisX = mVelX * dT + aX * dT * dT / 2;
-                    double mDisY = mVelY * dT + aY * dT * dT / 2;
-                    double mDisZ = mVelZ * dT + aZ * dT * dT / 2;
-
-                    // v1 = v0 + a * t
-                    mVelX += aX * dT;
-                    mVelY += aY * dT;
-                    mVelZ += aZ * dT;
-
-                    // s = (sx^2 + sy^2 + sz^2)^0.5
-                    mToTalDis += Math.sqrt(mDisX * mDisX + mDisY * mDisY + mDisZ * mDisZ);
-                }
-                mLastEventTime = t;
+        @Override
+        public void onPageSelected(int position) {
+            switch (position) {
+                case MAP_FRAGMENT_POSITION:
+                    mBottomNavigationView.setSelectedItemId(R.id.navigation_exercise);
+                    break;
+                case HEALTHY_FRAGMENT_POSITION:
+                    mBottomNavigationView.setSelectedItemId(R.id.navigation_healthy);
+                    break;
+                default:
+                    break;
             }
         }
 
         @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+        public void onPageScrollStateChanged(int state) {}
     };
 
     /**
@@ -499,4 +430,6 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
         System.exit(0);
     }
+
+
 }

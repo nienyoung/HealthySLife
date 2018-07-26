@@ -147,6 +147,7 @@
                     android:layout_marginEnd="@dimen/text_view_item_margin"
                     android:layout_marginStart="@dimen/text_view_item_margin"
                     android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
                     android:text="0"
                     android:textSize="@dimen/calorie_text_size" />
 

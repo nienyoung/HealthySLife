@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.admin.healthyslife_android.fragment.HeartRateMonitorFragment;
 import com.example.admin.healthyslife_android.music.MusicActivity;
@@ -64,10 +65,8 @@ public class MusicListAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 selfList.add(list.get(i));
-                AlertDialog.Builder builder  = new AlertDialog.Builder(context);
-                builder.setMessage("歌曲已添加至自定义列表。" ) ;
-                builder.setPositiveButton("确认" ,  null );
-                builder.show();
+                Toast.makeText(context, "歌曲已添加至自定义列表。",
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
