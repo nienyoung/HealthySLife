@@ -6,6 +6,8 @@ package com.example.admin.healthyslife_android.utils;
 public class HealthyUils {
     /**
      * Calculate the calories burned in exercise
+     * 跑步热量（kcal）＝ 体重（kg）× 运动时间（小时）× 指数K
+     * 指数K＝30 ÷ 速度（分钟400米）
      *
      * @param weight   weight in kilogram(kg)
      * @param time     exercise time in seconds
