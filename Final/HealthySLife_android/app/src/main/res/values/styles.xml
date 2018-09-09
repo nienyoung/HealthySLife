@@ -1,0 +1,22 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--透明切换-->
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="bottomNavigationStyle" parent="Widget.Design.BottomNavigationView">
+        <!--ripple的颜色-->
+        <item name="colorControlHighlight">@color/color_navigation_highlight</item>
+        <!--选中时的颜色-->
+        <item name="colorPrimary">@color/color_navigation_selected</item>
+        <!--未选中的颜色-->
+        <item name="android:textColorSecondary" >@color/color_navigation_unselected</item>
+    </style>
+
+</resources>
