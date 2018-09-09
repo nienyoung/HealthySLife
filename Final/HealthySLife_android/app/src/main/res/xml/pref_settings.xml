@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="@string/pref_key_user_settings"
+        android:title="@string/pref_title_user_settings">
+    <EditTextPreference
+        android:defaultValue="0"
+        android:inputType="number"
+        android:key="@string/pref_key_user_height"
+        android:summary="@string/pref_summary_user_height"
+        android:title="@string/pref_title_user_height" />
+    <EditTextPreference
+        android:defaultValue="0"
+        android:inputType="number"
+        android:key="@string/pref_key_user_weight"
+        android:summary="@string/pref_summary_user_weight"
+        android:title="@string/pref_title_user_weight" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

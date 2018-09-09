@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.HeartRateMonitorFragment">
+
+    <Button
+        android:id="@+id/btn_heartRateMonitor_start"
+        android:layout_width="@dimen/button_startMonitor_size"
+        android:layout_height="@dimen/button_startMonitor_size"
+        android:background="@drawable/bg_circle_button_start"
+        android:text="@string/main_healthy_startMonitor"
+        android:textColor="@color/color_font_white"
+        android:textSize="@dimen/button_text_size_heartRateMonitor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.40" />
+
+    <LinearLayout
+        android:id="@+id/main_healthy_heartRateInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_heartRateMonitor_start">
+
+        <TextView
+            android:id="@+id/tv_heartRateMonitor_tips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_healthy_monitorTips"
+            android:textColor="@color/color_healthyTips_font" />
+
+        <TextView
+            android:id="@+id/tv_heartRateMonitor_heartRate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/color_font_green" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

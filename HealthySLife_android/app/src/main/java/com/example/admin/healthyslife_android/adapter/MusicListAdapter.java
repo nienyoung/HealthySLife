@@ -1,25 +1,31 @@
 package com.example.admin.healthyslife_android.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.admin.healthyslife_android.fragment.HeartRateMonitorFragment;
 import com.example.admin.healthyslife_android.music.MusicActivity;
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.bean.Song;
 import com.example.admin.healthyslife_android.utils.MusicUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MusicListAdapter extends BaseAdapter {
     private Context context;
     private List<Song> list;
+    public static List<Song> selfList = new ArrayList<>();
     public MusicListAdapter(MusicActivity musicActivity, List<Song> list) {
         this.context = musicActivity;
         this.list = list;
-
     }
 
     @Override
@@ -38,7 +44,7 @@ public class MusicListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, ViewGroup viewGroup) {
         ViewHolder holder = null;
         if (view == null) {
             holder = new ViewHolder();
@@ -49,10 +55,20 @@ public class MusicListAdapter extends BaseAdapter {
             holder.singer = (TextView) view.findViewById(R.id.item_mymusic_singer);
             holder.duration = (TextView) view.findViewById(R.id.item_mymusic_duration);
             holder.position = (TextView) view.findViewById(R.id.item_mymusic_postion);
+            holder.plus = (ImageView)view.findViewById(R.id.plusImage);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
         }
+
+        holder.plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selfList.add(list.get(i));
+                Toast.makeText(context, "歌曲已添加至自定义列表。",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         if(list.get(i)==null) {
 
@@ -67,6 +83,7 @@ public class MusicListAdapter extends BaseAdapter {
             holder.singer.setText(null);
             holder.duration.setText(null);
             holder.position.setText(null);
+            holder.plus.setImageBitmap(null);
 
         }else {
             //给控件赋值
@@ -86,6 +103,7 @@ public class MusicListAdapter extends BaseAdapter {
         TextView singer;//歌手
         TextView duration;//时长
         TextView position;//序号
+        ImageView plus;
     }
 
 }

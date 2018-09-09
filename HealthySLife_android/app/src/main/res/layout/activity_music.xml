@@ -6,129 +6,43 @@
     android:background="#F9F9F9"
     android:id="@+id/relatives">
 
+    <LinearLayout
+        android:id="@+id/top_linear"
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:background="@color/color_healthyInfo_bg">
+        <Button
+            android:id="@+id/btn_default_music"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@color/color_healthyInfo_bg"
+            android:padding="-5dp"
+            android:textSize="15dp"
+            android:textColor="@color/colorPrimary"
+            android:text="默认列表" />
+        <Button
+            android:id="@+id/btn_my_music"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@color/color_healthyInfo_bg"
+            android:textSize="15dp"
+            android:textColor="@color/color_healthyTips_font"
+            android:text="自定义列表"/>
+    </LinearLayout>
 
     <ListView
         android:id="@+id/main_listview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_linear"/>
 
-
-    <!--RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#E4E4E4"
-        android:orientation="vertical">
-
-        <TableRow
-            android:id="@+id/row3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp">
-        <TextView
-            android:id="@+id/playingSong"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/row1"
-            android:text="歌曲名"
-            android:textColor="#0d0c0c"
-            android:textSize="15dp" />
-
-        <TextView
-            android:id="@+id/playingSinger"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_above="@id/row1"
-            android:text="歌手"
-            android:textColor="#0d0c0c"
-            android:textSize="12sp" />
-        </TableRow>
-
-    <TableRow
-        android:id="@+id/row1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/row3"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
-        <TextView
-            android:id="@+id/playingTime"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="00:00"
-            android:textSize="15dp"/>
-
-        <SeekBar
-            android:id="@+id/seekBar"
-            android:layout_weight="4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"/>
-
-        <TextView
-            android:id="@+id/totalTime"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="00:00"
-            android:textSize="15dp"/>
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/row2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/row1"
-        android:gravity="center_horizontal"
-        android:padding="10dp">
-
-        <ImageView
-            android:id="@+id/albumImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="5dp"
-            android:layout_gravity="center"
-            android:layout_marginRight="40dp"
-            android:src="@mipmap/img"/>
-
-        <Button
-            android:id="@+id/previousButton"
-            android:layout_width="50dp"
-            android:layout_height="30dp"
-            android:background="@drawable/round_rectangle"
-            android:textSize="15dp"
-            android:text="PREV"
-            android:textColor="#ffffff" />
-
-        <Button
-            android:id="@+id/isPlayButton"
-            android:layout_width="50dp"
-            android:layout_height="30dp"
-            android:background="@drawable/round_rectangle"
-            android:textSize="15dp"
-            android:text="PLAY"
-            android:textColor="#ffffff"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp" />
-
-        <Button
-            android:id="@+id/nextButton"
-            android:layout_width="50dp"
-            android:layout_height="30dp"
-            android:background="@drawable/round_rectangle"
-            android:textSize="15dp"
-            android:text="NEXT"
-            android:textColor="#ffffff"/>
-
-    </TableRow>
-
-    </RelativeLayout-->
 
     <RelativeLayout
+        android:id="@+id/music_bottom"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

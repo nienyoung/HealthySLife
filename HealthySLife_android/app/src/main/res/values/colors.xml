@@ -8,10 +8,12 @@
     <color name="color_icon_green_pressed">#2fa408</color>
     <color name="color_icon_red">#ff0000</color>
     <color name="color_icon_red_pressed">#ba0000</color>
+    <color name="color_icon_orange">#ff9900</color>
+    <color name="color_icon_orange_pressed">#a7690b</color>
     <color name="color_font_green">#339900</color>
     <color name="font_gray">#6b6b6b</color>
     <color name="color_font_white">#ffffff</color>
-    
+
     <color name="color_navigation_unselected">#868686</color>
     <color name="color_navigation_selected">#339900</color>
     <color name="color_navigation_highlight">#74a71c</color>

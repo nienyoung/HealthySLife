@@ -3,10 +3,9 @@ package com.example.admin.healthyslife_android.music;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -14,7 +13,6 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +26,7 @@ import com.example.admin.healthyslife_android.MainActivity;
 import com.example.admin.healthyslife_android.R;
 import com.example.admin.healthyslife_android.adapter.MusicListAdapter;
 import com.example.admin.healthyslife_android.bean.Song;
+import com.example.admin.healthyslife_android.fragment.HeartRateMonitorFragment;
 import com.example.admin.healthyslife_android.myWidget.MarqueTextView;
 import com.example.admin.healthyslife_android.utils.MusicUtils;
 
@@ -35,28 +34,23 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MusicActivity extends AppCompatActivity {
+public class MusicActivity extends Activity {
 
-    private ImageView isPlay;
-    private ImageView previous;
-    private ImageView next;
-    private ImageView albumImage;
+    private  ImageView isPlay;
+    private  ImageView previous;
+    private  ImageView next;
+    public static  ImageView albumImage;
+    public static  MarqueTextView playingSong;
+    public static  TextView playingSinger;
 
-    // private ObjectAnimator animator;
-    private int flag = 0;
-
-    private TextView totalTime;
-    private TextView playingTime;
-    private SeekBar seekBar;
+    private  TextView totalTime;
+    private  TextView playingTime;
+    private  SeekBar seekBar;
 
     private ListView mListView;
     private List<Song> list;
     private MusicListAdapter adapter;
     private int currentSongIndex;
-
-    private MarqueTextView playingSong;
-    private TextView playingSinger;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,28 +58,12 @@ public class MusicActivity extends AppCompatActivity {
         setContentView(R.layout.activity_music);
 
         bindServiceConnection();
+        musicService = new MusicService();
 
         initView();
         initListView();
         setListener();
-
-            //默认播放第一首
-            musicService = new MusicService();
-            musicService.resetPlayer();
-            if (list.get(0) != null) {
-                String firstPath = list.get(0).path;
-                seekBar.setProgress(0);
-                musicService.initPlayer(firstPath);
-                seekBar.setMax(musicService.mediaPlayer.getDuration());
-                playingSong.setText(list.get(0).song);
-                playingSinger.setText(list.get(0).singer);
-                list.get(0).thumBitmap = MusicUtils.getArtwork(MusicActivity.this, list.get(0).songId, list.get(0).albumId, false, false);
-                if (list.get(0).thumBitmap != null)
-                    albumImage.setImageBitmap(list.get(0).thumBitmap);
-            }
-
-
-
+        currentSongIndex = 0;
 
         //设置列表循环播放
         musicService.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -100,7 +78,9 @@ public class MusicActivity extends AppCompatActivity {
 
     }
 
+
     private void initView(){
+
         isPlay = (ImageView) findViewById(R.id.isPlayButton);
         previous = (ImageView) findViewById(R.id.previousButton);
         next = (ImageView) findViewById(R.id.nextButton);
@@ -124,13 +104,28 @@ public class MusicActivity extends AppCompatActivity {
     }
 
     private void setListener(){
+
         isPlay.setOnClickListener(new myOnClickListener());
         previous.setOnClickListener(new myOnClickListener());
         next.setOnClickListener(new myOnClickListener());
+        findViewById(R.id.btn_my_music).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MusicActivity.this, SelfMusicActivity.class);
+                startActivity(intent);
+                //切换效果
+                overridePendingTransition(R.anim.leftin, R.anim.leftout);
+            }
+        });
+        findViewById(R.id.music_bottom).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
         InnerItemOnCLickListener listener = new InnerItemOnCLickListener();
-        //给 ListView 添加点击（点击音乐即可播放）
-       mListView.setOnItemClickListener(listener);
+        mListView.setOnItemClickListener(listener);
     }
+
 
     private class InnerItemOnCLickListener implements AdapterView.OnItemClickListener {
         @Override
@@ -274,7 +269,6 @@ public class MusicActivity extends AppCompatActivity {
         Intent intent = new Intent(MusicActivity.this,MainActivity.class);
         startActivity(intent);
         //super.onBackPressed();
-
         overridePendingTransition(R.anim.leftin, R.anim.leftout);
     }
 
@@ -298,9 +292,39 @@ public class MusicActivity extends AppCompatActivity {
 
         verifyStoragePermissions(this);
 
-        seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
-        seekBar.setMax(musicService.mediaPlayer.getDuration());
-        handler.post(runnable);
+            seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
+            seekBar.setMax(musicService.mediaPlayer.getDuration());
+            handler.post(runnable);
+            if(list.get(0)==null){
+                playingTime.setText("00:00");
+                totalTime.setText("00:00");
+                seekBar.setProgress(0);
+                seekBar.setMax(0);
+            }
+
+            if(!MusicService.mediaPlayer.isPlaying()){
+            //默认播放第一首
+            MusicService.mediaPlayer.reset();
+            if (list.get(0) != null) {
+                String firstPath = list.get(currentSongIndex).path;
+                seekBar.setProgress(0);
+                musicService.initPlayer(firstPath);
+                seekBar.setMax(musicService.mediaPlayer.getDuration());
+                playingSong.setText(list.get(currentSongIndex).song);
+                playingSinger.setText(list.get(currentSongIndex).singer);
+                list.get(currentSongIndex).thumBitmap = MusicUtils.getArtwork(MusicActivity.this, list.get(currentSongIndex).songId, list.get(currentSongIndex).albumId, false, false);
+                if (list.get(currentSongIndex).thumBitmap != null)
+                    albumImage.setImageBitmap(list.get(currentSongIndex).thumBitmap);
+            }
+        }else{
+                if (list.get(0) != null) {
+                    if (!list.get(currentSongIndex).path.equals(MusicService.curPath)) {
+                        playingSong.setText(SelfMusicActivity.playingSong.getText());
+                        albumImage.setImageDrawable(getResources().getDrawable(R.drawable.custom));
+                        playingSinger.setText(SelfMusicActivity.playingSinger.getText());
+                    }
+                }
+            }
         super.onResume();
         Log.d("hint", "handler post runnable");
     }
@@ -347,13 +371,23 @@ public class MusicActivity extends AppCompatActivity {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
+        if (permission == PackageManager.PERMISSION_GRANTED){
+            return;
+        }else {
             // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     activity,
                     PERMISSIONS_STORAGE,
                     REQUEST_EXTERNAL_STORAGE
             );
+
+            permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (permission != PackageManager.PERMISSION_GRANTED){
+                AlertDialog.Builder builder  = new AlertDialog.Builder(activity);
+                builder.setMessage("禁止后无法播放音乐。" ) ;
+                builder.setPositiveButton("确认" ,  null );
+                builder.show();
+            }
         }
     }
 
