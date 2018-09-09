@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             mapFragment.updateTimeText(mTotalTime);
             if (mTotalTime != 0) {
                 mapFragment.updateStepFrequencyText((double) (mSteps * 60000) / mTotalTime);
-                double velocity = mapFragment.getTotalDistance() * 1000 / mTotalTime;
+                double velocity = mapFragment.getTotalDistance() / mTotalTime;
                 float calorie = calorieCalculator(getWeight(), mTotalTime / 1000, (float) velocity);
                 mapFragment.updateSpeedText(velocity);
                 HealthyFragment healthyFragment = getHealthyFragment();

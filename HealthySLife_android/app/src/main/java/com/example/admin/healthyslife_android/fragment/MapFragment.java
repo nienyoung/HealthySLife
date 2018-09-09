@@ -328,7 +328,7 @@ public class MapFragment extends Fragment {
             LatLng newPoint = new LatLng(location.getLatitude(), location.getAltitude());
             double deltaDistance = 0;
             if (mLastPoint != null) {
-                deltaDistance = DistanceUtil.getDistance(newPoint, mLastPoint);
+                deltaDistance = DistanceUtil.getDistance(mLastPoint, newPoint);
             }
             mTotalDistance += deltaDistance;
             mLastPoint = newPoint;
